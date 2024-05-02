@@ -1,10 +1,12 @@
 const BannerService = require("../services/BannerService");
+const multer = require("multer");
+const path = require("path");
+const { deleteFiles } = require("../utils/deleteFiles");
 
 class BannerController {
   async create(req, res) {
     try {
       const response = await BannerService.create(req.body);
-      await this.imageUpload(req, response._id);
       res.status(201).json({ message: "New Banner created", data: response });
     } catch (_) {
       res.status(500).json({ error: "Internal server error" });
@@ -14,7 +16,7 @@ class BannerController {
   async update(req, res) {
     try {
       await BannerService.update(req.params.id, req.body);
-      const response = await BannerService.getById(req.params.id);
+      const response = await BannerService.get(req.params.id);
       res.status(200).json({ message: "Banner updated", data: response });
     } catch (_) {
       res.status(500).json({ error: "Internal server error" });
@@ -41,7 +43,8 @@ class BannerController {
 
   async getList(req, res) {
     try {
-      const response = await BannerService.getList(req.params.body);
+      const response = await BannerService.list(req.body);
+
       res.status(200).json({ message: "", data: response });
     } catch (_) {
       res.status(500).json({ error: "Internal server error" });
@@ -57,7 +60,7 @@ class BannerController {
     }
   }
 
-  async imageUpload(req, bannerId) {
+  async imageUpload(req, res) {
     try {
       const storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -85,13 +88,13 @@ class BannerController {
         // File uploaded successfully
         const imageUrl = `uploads/banner/img/${req.file.filename}`;
 
-        // const bannerId = bannerId;
+        const bannerId = req.body.id;
 
-        const banner = await BannerService.getById(bannerId);
+        const banner = await BannerService.get(bannerId);
         if (!banner) {
           res.status(404).json({ error: "no banner found" });
         }
-        const oldBannerImage = banner.banner_url;
+        const oldBannerImage = banner?.banner_url;
 
         // Save the image URL in the database
         const updatedBanner = await BannerService.imageUpload(

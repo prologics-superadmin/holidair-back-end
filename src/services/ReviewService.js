@@ -65,6 +65,7 @@ class ReviewService {
           message: "Data Returned.",
         };
       }
+      return response;
     } catch (error) {
       throw error;
     }
@@ -75,6 +76,18 @@ class ReviewService {
       return await Review.findByIdAndUpdate(
         id,
         { $set: { is_deleted: true } },
+        { new: true }
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async imageUpload(id, imageUrl) {
+    try {
+      return await Review.findByIdAndUpdate(
+        id,
+        { image_url: imageUrl },
         { new: true }
       );
     } catch (error) {

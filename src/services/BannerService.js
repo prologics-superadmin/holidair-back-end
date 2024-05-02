@@ -44,8 +44,8 @@ class BannerService {
     try {
       const query = { is_deleted: false, ...filters };
 
-      const result = await ProductRegistry.find(query);
-      const count = await ProductRegistry.countDocuments(query);
+      const result = await Banner.find(query);
+      const count = await Banner.countDocuments(query);
 
       let response = {};
 
@@ -66,6 +66,7 @@ class BannerService {
           message: "Data Returned.",
         };
       }
+      return response;
     } catch (error) {
       throw error;
     }

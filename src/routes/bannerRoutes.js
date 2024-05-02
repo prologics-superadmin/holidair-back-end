@@ -7,7 +7,8 @@ router.post("/", BannerController.create);
 router.put("/:id", BannerController.update);
 router.get("/", BannerController.getAll);
 router.get("/:id", BannerController.get);
-router.get("/list", BannerController.getList);
+router.post("/list", BannerController.getList);
 router.delete("/:id", BannerController.delete);
+router.post("/image-upload", BannerController.imageUpload);
 
 module.exports = router;
