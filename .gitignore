@@ -1,0 +1,10 @@
+/node_modules
+/Reports
+
+.env
+.txt
+.todo
+/uploads/*
+
+/scripts/data/permission.data.json
+/src/configs/userPermissions.json
