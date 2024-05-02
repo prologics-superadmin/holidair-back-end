@@ -1,0 +1,70 @@
+{
+   "data":[
+      {
+         "permission_type_id":"652ff3b2645566825c26cc8c",
+         "permission_type":[
+            {
+               "permission":"Acces Permissions",
+               "permission_grp":[
+                  {
+                     "group_name":"Material Master Registry",
+                     "permissions":[
+                       {
+                           "name" : "Material",
+                           "permissions_checkboxs": [
+                               {
+                                  "_id":"xdscdfvfsdvf",
+                                  "permission_name":"create user permission",
+                                  "check_box_status":true
+                               },
+                               {
+                                  "_id":"xdscsfweerwdfvfsdvf",
+                                  "permission_name":"update user permission",
+                                  "check_box_status":true
+                               },
+                               {
+                                  "_id":"xdscdfvfsddfervf",
+                                  "permission_name":"view user permission",
+                                  "check_box_status":true
+                               },
+                               {
+                                  "_id":"xdscsfweerwdfvfsdvf",
+                                  "permission_name":"delete user permission",
+                                  "check_box_status":true
+                               }
+                            ]
+                       },
+                       {
+                           "name" : "Supplier Master Registry",
+                           "permissions_checkboxs": [
+                               {
+                                  "_id":"xdscdfvfsdvf",
+                                  "permission_name":"create user permission",
+                                  "check_box_status":true
+                               },
+                               {
+                                  "_id":"xdscsfweerwdfvfsdvf",
+                                  "permission_name":"update user permission",
+                                  "check_box_status":true
+                               },
+                               {
+                                  "_id":"xdscdfvfsddfervf",
+                                  "permission_name":"view user permission",
+                                  "check_box_status":true
+                               },
+                               {
+                                  "_id":"xdscsfweerwdfvfsdvf",
+                                  "permission_name":"delete user permission",
+                                  "check_box_status":true
+                               }
+                            ]
+                       }
+                     ]
+                  }
+               ]
+            },{"permission":"New Permission Type 1",
+            "permission_grp":[]}
+         ]
+      }
+   ]
+ }
