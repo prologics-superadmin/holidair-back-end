@@ -94,6 +94,23 @@ class ReviewService {
       throw error;
     }
   }
+
+  async getReviewList() {
+    try {
+      const query = { is_deleted: false };
+      const result = await Review.find(query);
+      return result.map((review) => ({
+        id: review._id,
+        imageSrc: review.image_url,
+        title: review.name,
+        content: review.review,
+        authorName: review.name,
+        authorName: review.name,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = new ReviewService();

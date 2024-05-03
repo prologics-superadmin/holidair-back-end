@@ -123,6 +123,16 @@ class ReviewController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  async getReviewList(req, res) {
+    try {
+      const response = await ReviewService.getReviewList();
+      res.status(200).json({ message: "", data: response });
+    } catch (error) {
+      console.error("Error handling Image upload:", error);
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new ReviewController();

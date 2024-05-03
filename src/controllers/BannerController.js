@@ -9,7 +9,7 @@ class BannerController {
       const response = await BannerService.create(req.body);
       res.status(201).json({ message: "New Banner created", data: response });
     } catch (_) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error 2" });
     }
   }
 
@@ -19,7 +19,7 @@ class BannerController {
       const response = await BannerService.get(req.params.id);
       res.status(200).json({ message: "Banner updated", data: response });
     } catch (_) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error 1" });
     }
   }
 
@@ -28,7 +28,7 @@ class BannerController {
       const response = await BannerService.get(req.params.id);
       res.status(200).json({ message: "", data: response });
     } catch (_) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error 3" });
     }
   }
 
@@ -37,7 +37,7 @@ class BannerController {
       const response = await BannerService.getAll();
       res.status(200).json({ message: "", data: response });
     } catch (_) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error 4" });
     }
   }
 
@@ -47,7 +47,7 @@ class BannerController {
 
       res.status(200).json({ message: "", data: response });
     } catch (_) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error 5" });
     }
   }
 
@@ -56,7 +56,7 @@ class BannerController {
       await BannerService.delete(req.params.id);
       res.status(200).json({ message: "Deleted banner Successfully" });
     } catch (_) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error 6" });
     }
   }
 
@@ -122,6 +122,15 @@ class BannerController {
     } catch (error) {
       console.error("Error handling Image upload:", error);
       res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getBannerList(req, res) {
+    try {
+      const response = await BannerService.getBannerList();
+      res.status(200).json({ message: "", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
     }
   }
 }

@@ -95,6 +95,21 @@ class BannerService {
       throw error;
     }
   }
+
+  async getBannerList() {
+    try {
+      const query = { is_deleted: false };
+      const result = await Banner.find(query);
+      return result.map((banner) => ({
+        id: banner._id,
+        imageSrc: banner.banner_url,
+        subtitle: banner.text_two,
+        title: banner.text_one,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = new BannerService();

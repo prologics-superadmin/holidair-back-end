@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.post("/", ReviewController.create);
 router.put("/:id", ReviewController.update);
+router.get("/get-list", ReviewController.getReviewList);
 router.get("/", ReviewController.getAll);
 router.get("/:id", ReviewController.get);
 router.post("/list", ReviewController.getList);
