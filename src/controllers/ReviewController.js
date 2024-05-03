@@ -14,13 +14,13 @@ class ReviewController {
   }
 
   async update(req, res) {
-    // try {
-    await ReviewService.update(req.params.id, req.body);
-    const response = await ReviewService.get(req.params.id);
-    res.status(200).json({ message: "Review updated", data: response });
-    // } catch (_) {
-    //   res.status(500).json({ error: "Internal server error" });
-    // }
+    try {
+      await ReviewService.update(req.params.id, req.body);
+      const response = await ReviewService.get(req.params.id);
+      res.status(200).json({ message: "Review updated", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 
   async get(req, res) {
