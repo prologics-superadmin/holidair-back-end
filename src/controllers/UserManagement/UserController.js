@@ -130,7 +130,10 @@ class UserController {
       const users = await User.find(query)
         .skip(skip)
         .limit(itemsPerPage)
-        .select("_id user_name email");
+        .populate({
+          path: "user_role_id",
+          select: "role _id", // Select only name field of the brand object
+        });
 
       // just for testing
       if (users.length) {

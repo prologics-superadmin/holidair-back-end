@@ -30,10 +30,10 @@ const userSchema = new mongoose.Schema({
   // address: {
   //   type: String,
   // },
-  // user_role_id: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "UserRole",
-  // },
+  user_role_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserRole",
+  },
   // shop_name: String,
   // area: String,
   // status: {
