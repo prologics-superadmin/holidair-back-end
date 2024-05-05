@@ -35,5 +35,5 @@ app.use(
     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     next();
   },
-  express.static(path.join(__dirname, "/uploads/"))
+  express.static(path.join(__dirname, "uploads/"))
 );
