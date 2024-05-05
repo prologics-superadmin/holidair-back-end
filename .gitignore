@@ -4,7 +4,7 @@
 .env
 .txt
 .todo
-/uploads/*
+# /uploads/*
 
 /scripts/data/permission.data.json
 /src/configs/userPermissions.json
