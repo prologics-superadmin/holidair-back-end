@@ -43,6 +43,10 @@ class DestinationService {
       const skip = (page - 1) * itemsPerPage;
       const query = { is_deleted: false, ...filters };
 
+      if (search) {
+        query["$or"] = [{ name: { $regex: search, $options: "i" } }];
+      }
+
       const result = await Destination.find(query);
       const count = await Destination.countDocuments(query);
 
@@ -65,6 +69,7 @@ class DestinationService {
           message: "Data Returned.",
         };
       }
+      return response;
     } catch (error) {
       throw error;
     }
@@ -75,6 +80,18 @@ class DestinationService {
       return await Destination.findByIdAndUpdate(
         id,
         { $set: { is_deleted: true } },
+        { new: true }
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async imageUpload(id, imageUrl) {
+    try {
+      return await Destination.findByIdAndUpdate(
+        id,
+        { image_url: imageUrl },
         { new: true }
       );
     } catch (error) {
