@@ -4,10 +4,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const db = require("./src/configs/db"); // Import the database connection
 const routeLoader = require("./routeLoader"); // Import the route loader
-
 
 // Middleware
 app.use(express.json({ limit: "50mb" }));
