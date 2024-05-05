@@ -4,9 +4,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const db = require("./src/configs/db"); // Import the database connection
 const routeLoader = require("./routeLoader"); // Import the route loader
+const path = require("path");
 
 // Middleware
 app.use(express.json({ limit: "50mb" }));
@@ -27,3 +28,12 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+app.use(
+  "/api/uploads",
+  function (req, res, next) {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
+  express.static(path.join(__dirname, "/uploads/"))
+);
