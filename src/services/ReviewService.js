@@ -58,7 +58,12 @@ class ReviewService {
         };
       } else {
         response = {
-          data: result,
+          data: result.map((review) => ({
+            _id: review._id,
+            name: review.name,
+            review: review.review.substring(0, 3).trimEnd() + "...",
+            image_url: review.image_url,
+          })),
           dataCount: count,
           dataPerPage: itemsPerPage,
           currentPaginationIndex: 1, // Assuming this should be 1 for the first page

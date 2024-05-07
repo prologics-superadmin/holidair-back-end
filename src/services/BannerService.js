@@ -59,7 +59,12 @@ class BannerService {
         };
       } else {
         response = {
-          data: result,
+          data: result.map((banner) => ({
+            _id: banner._id,
+            text_one: banner.text_one.substring(0, 3).trimEnd() + "...",
+            text_two: banner.text_two.substring(0, 3).trimEnd() + "...",
+            banner_url: banner.banner_url,
+          })),
           dataCount: count,
           dataPerPage: itemsPerPage,
           currentPaginationIndex: 1, // Assuming this should be 1 for the first page
