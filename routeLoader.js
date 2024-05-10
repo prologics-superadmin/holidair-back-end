@@ -11,6 +11,9 @@ const rolePermission = require("./src/routes/UserManagement/rolePermissionRoutes
 const BannerRoutes = require("./src/routes/bannerRoutes");
 const DestinationRoutes = require("./src/routes/destinationRoutes");
 const ReviewRoutes = require("./src/routes/reviewRoutes");
+const CountryRoutes = require("./src/routes/countryRoutes");
+const FlightOfferRoutes = require("./src/routes/flightOfferRoutes");
+const PackageRoutes = require("./src/routes/packageRoutes");
 
 module.exports = (app) => {
   // User routes
@@ -21,4 +24,7 @@ module.exports = (app) => {
   app.use("/api/banner", BannerRoutes);
   app.use("/api/destination", DestinationRoutes);
   app.use("/api/review", ReviewRoutes);
+  app.use("/api/country", CountryRoutes);
+  app.use("/api/flight-offer", FlightOfferRoutes);
+  app.use("/api/package", PackageRoutes);
 };

@@ -1,0 +1,230 @@
+CountryId,CountryName
+AF,Afghanistan
+AL,Albania
+DZ,Algeria
+AS,American Samoa
+AD,Andorra
+AO,Angola
+AI,Anguilla
+AG,Antigua and Barbuda
+AR,Argentina
+AM,Armenia
+AW,Aruba
+AZ,Aserbaidshan
+AU,Australia
+AT,Austria
+BS,Bahamas
+BH,Bahrain
+BD,Bangladesh
+BB,Barbados
+BY,Belarus
+BE,Belgium
+BZ,Belize
+BJ,Benin
+BM,Bermuda
+BT,Bhutan
+BO,Bolivia
+BQ,"Bonaire, Sint Eustatius and Saba"
+BA,Bosnia and Herzigovina
+BW,Botswana
+BR,Brazil
+BN,Brunei Darussalam
+BG,Bulgaria
+BF,Burkina Faso
+BI,Burundi
+KH,Cambodia
+CM,Cameroon
+CA,Canada
+CV,Cape Verde
+KY,Cayman Islands
+CF,Central African Republic
+TD,Chad
+CL,Chile
+CN,China
+CO,Colombia
+KM,Comoros
+CG,Congo
+CD,"Congo, Democratic Republic (ex. Zaire)"
+CK,Cook Islands
+CR,Costa Rica
+HR,Croatia
+CU,Cuba
+CW,Curaçao
+CY,Cyprus
+CZ,Czech Republic
+DK,Denmark
+DJ,Djibouti
+DM,Dominica
+DO,Dominican Republic
+TL,East Timor
+EC,Ecuador
+EG,Egypt
+IE,Eire / Ireland
+SV,El Salvador
+GQ,Equatorial Guinea
+ER,Eritrea
+EE,Estland
+ET,Ethiopia
+FO,Faeroe Islands
+FK,Falkland Islands
+FM,Federated States of Micronesia
+FJ,Fiji
+FI,Finland
+FR,France
+GF,French Guiana
+PF,French Polynesia
+GA,Gabon
+GM,Gambia
+GE,Georgia
+DE,Germany
+GH,Ghana
+GI,Gibraltar
+GR,Greece
+GL,Greenland
+GD,Grenada
+GP,Guadeloupe
+GU,Guam
+GT,Guatemala
+GN,Guinea
+GW,Guinea-Bissau
+GY,Guyana
+HT,Haiti
+HN,Honduras
+HK,Hong Kong
+HU,Hungary
+IS,Iceland
+IN,India
+ID,Indonesia
+IR,Iran
+IQ,Iraq
+IL,Israel
+IT,Italy
+CI,Ivory Coast
+JM,Jamaica
+JP,Japan
+JO,Jordan
+KZ,Kazakstan
+KE,Kenya
+KI,Kiribati
+KR,"Korea, Republic of"
+KW,Kuwait
+KG,Kyrgystan
+LA,Lao People's Democratic Republic
+LV,Latvia
+LB,Lebanon
+LS,Lesotho
+LR,Liberia
+LY,Libya
+LI,Liechtenstein
+LT,Lithuania
+LU,Luxembourg
+MO,Macau
+MK,Macedonia (FYROM)
+MG,Madagascar
+MW,Malawi
+MY,Malaysia
+MV,Maldives
+ML,Mali
+MT,Malta
+MQ,Martinique
+MR,Mauritania
+MU,Mauritius
+MX,Mexico
+MD,Moldova
+MC,Monaco
+MN,Mongolia
+ME,Montenegro
+MS,Montserrat
+MA,Morocco
+MZ,Mozambique
+MM,Myanmar
+NA,Namibia
+NR,Nauru
+NP,Nepal
+NL,Netherlands
+NC,New Caledonia
+NZ,New Zealand
+NI,Nicaragua
+NE,Niger
+NG,Nigeria
+NU,Niue
+NF,Norfolk Island
+MP,Northern Mariana Islands
+NO,Norway
+OM,Oman
+XO,Other Countries
+PK,Pakistan
+PW,Palau
+PS,Palestine
+PA,Panama
+PG,Papua New Guinea
+PY,Paraguay
+PE,Peru
+PH,Philippines
+PL,Poland
+PT,Portugal
+PR,Puerto Rico
+QA,Qatar
+RE,Reunion
+RO,Romania
+RU,Russian Federation
+RW,Rwanda
+LC,Saint Lucia
+VC,Saint Vincent and the Grenadines
+BL,Saint-Barthélemy
+MF,Saint-Martin
+WS,Samoa
+SM,San Marino
+ST,Sao Tome and Principe
+SA,Saudi Arabia
+SN,Senegal
+RS,Serbia
+SC,Seychelles
+SL,Sierra Leone
+SG,Singapore
+SX,Sint Maarten
+SK,Slovakia
+SI,Slovenia
+SB,Solomon Islands
+SO,Somalia
+ZA,South Africa
+SS,South Sudan
+ES,Spain
+LK,Sri Lanka
+SH,St. Helena
+KN,St. Kitts and Nevis
+PM,St. Pierre and Miquelon
+SD,Sudan
+SR,Suriname
+SZ,Swaziland
+SE,Sweden
+CH,Switzerland
+SY,Syrian Arab Republic
+TW,"Taiwan, Province of China"
+TJ,Tajikistan
+TZ,Tanzania
+TH,Thailand
+TG,Togo
+TO,Tonga
+TT,Trinidad and Tobago
+TN,Tunisia
+TR,Turkey
+TM,Turkmenistan
+TC,Turks and Caicos Islands
+UG,Uganda
+UA,Ukraine
+AE,United Arab Emirates
+GB,United Kingdom
+UY,Uruguay
+US,USA
+UZ,Uzbekistan
+VU,Vanuatu
+VE,Venezuela
+VN,Viet Nam
+VG,"Virgin Islands, British"
+VI,"Virgin Islands, U.S."
+WF,Wallis and Futuna Islands
+EH,Western Sahara
+YE,Yemen
+ZM,Zambia
+ZW,Zimbabwe

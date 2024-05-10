@@ -52,6 +52,7 @@ class BannerService {
       if (count <= 0) {
         response = {
           data: [],
+
           dataCount: 0,
           currentPaginationIndex: page,
           dataPerPage: 20,
