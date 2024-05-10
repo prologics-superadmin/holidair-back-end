@@ -23,10 +23,15 @@ class CountryService {
   async getCityList(data) {
     try {
       const search = data.search;
-      const query = {};
+      const filters = data.filters || {};
+
+      const query = { ...filters };
 
       if (search) {
-        query["$or"] = [{ country: { $regex: search, $options: "i" } }];
+        query["$or"] = [
+          { country: { $regex: search, $options: "i" } },
+          { name: { $regex: search, $options: "i" } },
+        ];
       }
       const result = await City.find(query);
       return result.map((city) => ({
