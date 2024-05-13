@@ -2,21 +2,24 @@ const mongoose = require("mongoose");
 
 const FlightOfferSchema = new mongoose.Schema(
   {
-    destination: {
+    destination_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Destination",
     },
     from_location: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Airport",
     },
     to_location: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Airport",
     },
     price: {
       type: String,
     },
-    airline_code: {
-      type: String,
+    airline_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Airline",
     },
     airline_baggage: {
       type: String,
