@@ -15,24 +15,26 @@ async function automateAirlines() {
     try {
         console.log("\x1b[32m", "[Airlines script] Clearing the database.");
 
+        let AirlinesObj = await Airline.findOne();
 
-        for (let obj of Airlines) {
-
-            let AirlinesObj = await Airline.findOne({ code: obj.id });
-
-            if (AirlinesObj) {
-                console.log("\x1b[35m", "[Airlines script] Already have");
-                continue
-            }
-
+        if (AirlinesObj) {
+            console.log("\x1b[35m", "[Airlines script] Already have");
+        } else {
             let formattedArray = [];
-            formattedArray.push({
-                logo: obj.logo,
-                code: obj.id,
-                name: obj.name,
-            });
+
+            for (let obj of Airlines) {
+
+                formattedArray.push({
+                    logo: obj.logo,
+                    code: obj.id,
+                    name: obj.name,
+                });
+            }
             await Airline.create(formattedArray);
         }
+
+
+
         console.log("\x1b[32m", "[Airlines script] Airlines Automated Successfully.");
         process.exit(0);
     } catch (_) {
