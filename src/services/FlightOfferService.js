@@ -1,5 +1,6 @@
 const { findOneAndDelete } = require("../models/Banner");
 const FlightOffer = require("../models/FlightOffers");
+const formatCurrency = require("../utils/formatCurrency");
 
 class FlightOfferService {
   async create(data) {
@@ -98,7 +99,7 @@ class FlightOfferService {
             airline_id: offers.airline_id.name,
             from: offers.from_location.name,
             to: offers.to_location.name,
-            price: offers.price,
+            price: formatCurrency(offers.price),
           })),
           dataCount: 0,
           currentPaginationIndex: page,
@@ -150,7 +151,9 @@ class FlightOfferService {
           name: offer.destination_id.name,
           image: offer.destination_id.image_url,
           airline_logo: offer.airline_id.logo,
-          price: offer.price,
+          from: offer.from_location.name,
+          to: offer.to_location.name,
+          price: formatCurrency(offer.price),
         }));
       } else {
         const query = { is_deleted: false, flight_offer: true };
@@ -176,7 +179,7 @@ class FlightOfferService {
           name: offer.destination_id.name,
           image: offer.destination_id.image_url,
           airline_logo: offer.airline_id.logo,
-          price: offer.price,
+          price: formatCurrency(offer.price),
         }));
       }
     } catch (error) {

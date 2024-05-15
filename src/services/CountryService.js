@@ -81,8 +81,8 @@ class CountryService {
 
       if (search) {
         query["$or"] = [
-          { name: { $regex: search, $options: "i" } },
           { code: { $regex: search, $options: "i" } },
+          { name: { $regex: search, $options: "i" } },
         ];
       }
 

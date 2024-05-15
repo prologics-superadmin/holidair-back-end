@@ -1,4 +1,5 @@
 const Package = require("../models/Package");
+const formatCurrency = require("../utils/formatCurrency");
 
 class PackageService {
   async create(data) {
@@ -75,11 +76,11 @@ class PackageService {
             package_name: pack.package_name,
             city_name: pack.city_id?.name,
             currency: pack.currency,
-            price: pack.price,
-            duration: pack.duration,
+            price: formatCurrency(pack.price),
+            duration: parseInt(pack.duration),
 
-            min_pax: pack.min_pax ?? "",
-            max_pax: pack.max_pax ?? "",
+            min_pax: pack.min_pax ? parseInt(pack.min_pax) : "",
+            max_pax: pack.max_pax ? parseInt(pack.max_pax) : "",
           })),
           dataCount: count,
           dataPerPage: itemsPerPage,
