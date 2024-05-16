@@ -1,9 +1,5 @@
 require("dotenv").config();
 const db = require("../src/configs/db");
-const PermissionCategory = require("../src/models/UserManagement/Permissions/PermissionCategory");
-const PermissionGroup = require("../src/models/UserManagement/Permissions/PermissionGroup");
-const Permission = require("../src/models/UserManagement/Permissions/Permission");
-const PermissionCheckBoxes = require("../src/models/UserManagement/Permissions/PermissionCheckBoxes");
 const fs = require("fs");
 
 const Airports = require("../uploads/json/airports.json");
@@ -26,7 +22,7 @@ async function automateAirports() {
     }
 
     console.log("\x1b[32m", "[Airport script] Airport Automated Successfully.");
-    process.exit(0);
+
   } catch (_) {
     console.log("\x1b[31m", "[Airport script] Error while automating Airport.");
     console.log(_);
@@ -34,4 +30,4 @@ async function automateAirports() {
   }
 }
 
-automateAirports();
+module.exports = automateAirports;

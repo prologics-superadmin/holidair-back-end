@@ -36,11 +36,6 @@ async function readCSV(filePath = "", skip = 0) {
           items.push(row);
         })
         .on("end", async () => {
-          fs.unlink(filePath, (err) => {
-            if (err) {
-              console.error("Error deleting file:", err);
-            }
-          });
           resolve(items);
         })
         .on("error", (error) => {
@@ -54,8 +49,8 @@ async function readCSV(filePath = "", skip = 0) {
 }
 
 function filterArray(array, properties) {
-  return array.filter(obj => 
-      properties.every(prop => obj.hasOwnProperty(prop))
+  return array.filter(obj =>
+    properties.every(prop => obj.hasOwnProperty(prop))
   );
 }
 
