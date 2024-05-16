@@ -95,6 +95,33 @@ class CountryService {
       throw error;
     }
   }
+
+  async getAirports(data) {
+    try {
+      const search = data.text;
+      const filters = data.filters || {};
+
+      const query = { ...filters };
+
+      if (search) {
+        query["$or"] = [
+          { name: { $regex: search, $options: "i" } },
+          { city: { $regex: search, $options: "i" } },
+          { state: { $regex: search, $options: "i" } },
+          { country: { $regex: search, $options: "i" } },
+          { code: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const result = await Airport.find(query).limit(100);
+      return result.map((airPort) => ({
+        code: airPort.code,
+        name: `${airPort.name} - ${airPort.city} - ${airPort.country}`,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = new CountryService();

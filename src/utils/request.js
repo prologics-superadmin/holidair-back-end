@@ -1,0 +1,39 @@
+const axios = require("axios");
+
+// Base URL
+const baseURL = "https://api.brightsun.co.uk/api/BSFlight";
+
+async function makeAPIRequest(method, endpoint, body) {
+  try {
+    const url = `${baseURL}${endpoint}`;
+    const headers = {
+      "Content-Type": "application/json",
+      // Add any additional headers if needed
+    };
+
+    // Add Basic Auth headers if credentials are provided
+    const username = process.env.API_USERNAME;
+    const password = process.env.API_PASSWORD;
+
+    if (username && password) {
+      headers["Authorization"] = `Basic ${Buffer.from(
+        `${username}:${password}`
+      ).toString("base64")}`;
+    }
+
+    const options = {
+      method: method.toUpperCase(),
+      url: url,
+      headers: headers,
+      data: body, // Add request body if method is POST
+    };
+
+    const response = await axios(options);
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+}
+
+module.exports = makeAPIRequest;

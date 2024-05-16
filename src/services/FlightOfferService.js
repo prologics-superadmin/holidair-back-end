@@ -130,6 +130,8 @@ class FlightOfferService {
       if (type == 1) {
         const query = { is_deleted: false, worldwide_flight_offer: true };
         const result = await FlightOffer.find(query)
+          .sort({ _id: -1 }) // Sort in descending order based on _id to get the latest entries first
+          .limit(4)
           .populate({
             path: "destination_id",
             select: "name _id image_url", // Select only name field of the brand object

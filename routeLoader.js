@@ -14,6 +14,7 @@ const ReviewRoutes = require("./src/routes/reviewRoutes");
 const CountryRoutes = require("./src/routes/countryRoutes");
 const FlightOfferRoutes = require("./src/routes/flightOfferRoutes");
 const PackageRoutes = require("./src/routes/packageRoutes");
+const flightSearchRoutes = require("./src/routes/flightSearchRoutes");
 
 module.exports = (app) => {
   // User routes
@@ -27,4 +28,5 @@ module.exports = (app) => {
   app.use("/api/country", CountryRoutes);
   app.use("/api/flight-offer", FlightOfferRoutes);
   app.use("/api/package", PackageRoutes);
+  app.use("/api/flight-search", flightSearchRoutes);
 };

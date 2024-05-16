@@ -130,7 +130,7 @@ class PackageService {
         _id: data._id,
         imageSrc: data.image_url,
         rating: data.star_rating.length - 1,
-        price: data.price,
+        price: formatCurrency(data.price),
         days: data.duration,
         location: data.city_id.name,
       }));
@@ -152,7 +152,7 @@ class PackageService {
         _id: data._id,
         imageSrc: data.image_url,
         rating: data.star_rating.length - 1,
-        price: data.price,
+        price: formatCurrency(data.price),
         days: data.duration,
         location: data.city_id.name,
       }));
@@ -173,7 +173,7 @@ class PackageService {
         _id: data._id,
         imageSrc: data.image_url,
         rating: data.star_rating.length - 1,
-        price: data.price,
+        price: formatCurrency(data.price),
         days: data.duration,
         location: data.city_id.name,
       }));
@@ -194,7 +194,7 @@ class PackageService {
         _id: data._id,
         imageSrc: data.image_url,
         rating: data.star_rating.length - 1,
-        price: data.price,
+        price: formatCurrency(data.price),
         days: data.duration,
         location: data.city_id.name,
       }));
