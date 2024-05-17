@@ -116,7 +116,7 @@ class CountryService {
       const result = await Airport.find(query).limit(100);
       return result.map((airPort) => ({
         code: airPort.code,
-        name: `${airPort.name} - ${airPort.city} - ${airPort.country}`,
+        name: `${airPort.name} - ${airPort.country}`,
       }));
     } catch (error) {
       throw error;

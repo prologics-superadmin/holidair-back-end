@@ -15,6 +15,27 @@ class FlightSearchController {
       res.status(500).json({ error: "Internal server error " });
     }
   }
+
+  async airportSearch(req, res) {
+    try {
+      const airportDetails = [];
+      const response = await makeAPIRequest(
+        "get",
+        `/AutoComplete/${req.params.text}`
+      );
+      response.forEach((item) => {
+        const match = item.AIRPORT.match(/^(.*)\[(.*)\](.*)$/);
+        if (match) {
+          const name = (match[1] + match[3]).trim();
+          const code = match[2];
+          airportDetails.push({ name, code });
+        }
+      });
+      res.status(200).json({ data: airportDetails });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error " });
+    }
+  }
 }
 
 module.exports = new FlightSearchController();
