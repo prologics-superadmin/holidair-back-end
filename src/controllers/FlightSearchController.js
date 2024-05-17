@@ -25,8 +25,9 @@ class FlightSearchController {
       );
       response.forEach((item) => {
         const match = item.AIRPORT.match(/^(.*)\[(.*)\](.*)$/);
+        const nameValue = item.AIRPORT;
         if (match) {
-          const name = (match[1] + match[3]).trim();
+          const name = nameValue;
           const code = match[2];
           airportDetails.push({ name, code });
         }
