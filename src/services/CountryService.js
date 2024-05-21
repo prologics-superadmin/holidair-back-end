@@ -122,6 +122,30 @@ class CountryService {
       throw error;
     }
   }
+
+  async getAirLines(data) {
+    try {
+      const search = data.text;
+      const filters = data.filters || {};
+
+      const query = { ...filters };
+
+      if (search) {
+        query["$or"] = [
+          { code: { $regex: search, $options: "i" } },
+          { name: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const result = await Airline.find(query);
+      return result.map((airLine) => ({
+        code: airLine.code,
+        name: `${airLine.name} (${airLine.code})`,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = new CountryService();

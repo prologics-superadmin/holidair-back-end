@@ -105,6 +105,15 @@ class CountryController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  async getAirLines(req, res) {
+    try {
+      const response = await CountryService.getAirLines(req.params);
+      res.status(200).json({ message: "", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
 
 module.exports = new CountryController();
