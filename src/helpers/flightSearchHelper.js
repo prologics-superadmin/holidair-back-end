@@ -84,8 +84,28 @@ async function getUniqueAirports(arr) {
   return Array.from(airportCodes);
 }
 
+async function getAirportCodes(data) {
+  let origin = "";
+  let finalDestination = "";
+
+  if (data.length > 0) {
+    // Get the journey (assumed to be one-way)
+    const journey = data[0].journey[0];
+    if (journey && journey.optionInfos.length > 0) {
+      const airSegments = journey.optionInfos[0].airSegmentInfos;
+      if (airSegments.length > 0) {
+        origin = airSegments[0].origin;
+        finalDestination = airSegments[airSegments.length - 1].destination;
+      }
+    }
+  }
+
+  return { origin, finalDestination };
+}
+
 exports.getHighestAndLowestPrices = getHighestAndLowestPrices;
 exports.getStopValues = getStopValues;
 exports.getUniqueTotalFlightDurations = getUniqueTotalFlightDurations;
 exports.getUniqueBaggageAllowances = getUniqueBaggageAllowances;
 exports.getUniqueAirports = getUniqueAirports;
+exports.getAirportCodes = getAirportCodes;
