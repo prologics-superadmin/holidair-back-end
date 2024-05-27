@@ -78,7 +78,7 @@ class FlightSearchController {
   async getFareRules(req, res) {
     try {
       const response = await makeAPIRequest("POST", "/FareRule", req.body);
-      console.log(response);
+
       res.status(200).json({ data: response });
     } catch (_) {
       res.status(500).json({ error: "Internal server error " });
