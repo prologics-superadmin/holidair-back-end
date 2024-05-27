@@ -10,5 +10,6 @@ router.post("/airline-list", CountryController.getAirlineList);
 router.post("/airport-list", CountryController.getAirportsList);
 router.get("/airports/:text", CountryController.getAirports);
 router.get("/airlines/:text", CountryController.getAirLines);
+router.get("/country/:text", CountryController.getCountry);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 // Base URL
-const baseURL = "https://api.brightsun.co.uk/api/BSFlight";
+const baseURL = process.env.FLIGHT_URL;
 
 async function makeAPIRequest(method, endpoint, body) {
   try {
@@ -12,8 +12,8 @@ async function makeAPIRequest(method, endpoint, body) {
     };
 
     // Add Basic Auth headers if credentials are provided
-    const username = process.env.API_USERNAME;
-    const password = process.env.API_PASSWORD;
+    const username = process.env.FLIGHT_API_USERNAME;
+    const password = process.env.FLIGHT_API_PASSWORD;
 
     if (username && password) {
       headers["Authorization"] = `Basic ${Buffer.from(
