@@ -25,11 +25,10 @@ async function makeAttractionApiRequest(method, endpoint, body) {
       //   params: "", // Add query parameters
       data: JSON.stringify(body),
     };
-    console.log(options);
+
     const response = await axios(options);
     return response.data;
   } catch (error) {
-    console.log(error);
     throw error;
   }
 }
