@@ -1,34 +1,37 @@
 const axios = require("axios");
 const crypto = require("crypto");
 
-const baseURL = process.env.HOTEL_URL;
+const baseURL = process.env.ATTRACTION_URL;
 
-async function makeHotelApiRequest(method, endpoint, body) {
+async function makeAttractionApiRequest(method, endpoint, body) {
   try {
     const timestamp = Math.floor(Date.now() / 1000);
-    const toHash = `${process.env.HOTELBEDS_API_KEY}${process.env.HOTELBEDS_API_SECRET}${timestamp}`;
+    const toHash = `${process.env.ATTRACTION_API_KEY}${process.env.ATTRACTION__API_SECRET}${timestamp}`;
     const xSignature = crypto.createHash("sha256").update(toHash).digest("hex");
     const url = `${baseURL}/${endpoint}`;
+
     const headers = {
-      "Api-key": process.env.HOTELBEDS_API_KEY,
+      "Api-key": process.env.ATTRACTION_API_KEY,
       "X-Signature": xSignature,
       Accept: "application/json",
-      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Encoding": "gzip",
+      "Content-Type": "application/json",
     };
 
-    // Axios request options
     const options = {
       method: method,
       url: url,
       headers: headers,
-      params: body, // Add query parameters
+      //   params: "", // Add query parameters
+      data: JSON.stringify(body),
     };
-
+    console.log(options);
     const response = await axios(options);
     return response.data;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
 
-module.exports = makeHotelApiRequest;
+module.exports = makeAttractionApiRequest;
