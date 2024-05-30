@@ -14,6 +14,8 @@ class FlightSearchController {
   async searchFlights(req, res) {
     try {
       const response = await makeAPIRequest("post", "/flightsearch", req.body);
+      console.log("response")
+      console.log(response)
       if (response.result.status === "OK") {
         const { highest, lowest } = await getHighestAndLowestPrices(
           response.result.airSolutions
@@ -48,8 +50,8 @@ class FlightSearchController {
       } else {
         res.status(500).json({ error: "API ERROR" });
       }
-    } catch (_) {
-      res.status(500).json({ error: "Internal server error " });
+    } catch (error) {
+      res.status(500).json({ error: error });
     }
   }
 

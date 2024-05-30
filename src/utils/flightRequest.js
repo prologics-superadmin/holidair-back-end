@@ -32,7 +32,7 @@ async function makeAPIRequest(method, endpoint, body) {
     return response.data;
   } catch (error) {
     console.error("Error:", error);
-    throw error;
+    return error;
   }
 }
 
