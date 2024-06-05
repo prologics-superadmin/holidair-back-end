@@ -4,6 +4,7 @@ const AttractionPaxDetail = require("../../models/attractionBooking/AttractionPa
 class AttractionBookingService {
   async create(data) {
     try {
+      console.log(data);
       return AttractionBookingDetail.create(data);
     } catch (error) {
       throw error;

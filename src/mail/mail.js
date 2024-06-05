@@ -1,16 +1,13 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-    // host: "smtp.forwardemail.net",
-    service: 'gmail',
-    // port: 465,
-    // secure: true,
-    auth: {
-      user: process.env.email,
-      pass: process.env.password,
-    },
-  });
-
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: "da250bd6110cde",
+    pass: "0ee80c544168cc",
+  },
+});
 
 // async function main() {
 //     const info = await transporter.sendMail({
@@ -20,25 +17,22 @@ const transporter = nodemailer.createTransport({
 //       text: "Hello world?", // plain text body
 //       html: "<b>Hello world?</b>", // html body
 //     });
-  
+
 //     console.log("Message sent: %s", info.messageId);
-    
+
 //   }
 
-
-async function sendMail(receiverAddress, subject, template){
-   try{
-        const mailInfo = await transporter.sendMail({
-            to: receiverAddress,
-            subject,
-            html: template
-        });
-   }catch(error){
+async function sendMail(receiverAddress, subject, template) {
+  try {
+    const mailInfo = await transporter.sendMail({
+      to: receiverAddress,
+      subject,
+      html: template,
+    });
+  } catch (error) {
     console.error(error);
-    throw 'Mail sending failed';
-   }
-
-
+    throw "Mail sending failed";
+  }
 }
 
 module.exports = sendMail;

@@ -15,3 +15,5 @@ class AttractionBookingController {
     }
   }
 }
+
+module.exports = new AttractionBookingController();
