@@ -3,7 +3,7 @@ const crypto = require("crypto");
 
 const baseURL = process.env.HOTEL_URL;
 
-async function makeHotelApiRequest(method, endpoint, body) {
+async function makeHotelApiRequest(method, endpoint, body = {}) {
   try {
     const timestamp = Math.floor(Date.now() / 1000);
     const toHash = `${process.env.HOTELBEDS_API_KEY}${process.env.HOTELBEDS_API_SECRET}${timestamp}`;
