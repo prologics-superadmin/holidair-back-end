@@ -6,7 +6,7 @@ class AttractionBookingController {
       const bookingDetails = await AttractionBookingService.create(req.body);
       await AttractionBookingService.createPaxDetails(
         bookingDetails._id,
-        req.body.passengers
+        req.body.pax_details
       );
       const response = AttractionBookingService.getById(bookingDetails._id);
       res.status(200).json({ data: response });

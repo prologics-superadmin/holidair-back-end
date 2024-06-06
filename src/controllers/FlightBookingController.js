@@ -14,7 +14,7 @@ class FlightBookingController {
         req.body.passengers
       );
       const response = await FlightBookingService.getById(bookingDetails._id);
-      await sendMail(bookingDetails.email, "test", "");
+      await sendMail(bookingDetails.email, "booking", "");
       res.status(200).json({ data: response });
     } catch (error) {
       res.status(500).json({ error: error });
