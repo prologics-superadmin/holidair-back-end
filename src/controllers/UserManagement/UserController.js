@@ -260,10 +260,10 @@ class UserController {
       const userRole = await Role.findById(user.user_role_id);
 
       const response = {
-        user_name: user.user_name,
+        user_data: user,
         user_role: userRole.role,
         role_p: userRole.ID,
-        permissions: await validateAllUserPermission(req.user.userId),
+        // permissions: await validateAllUserPermission(req.user.userId),
       };
 
       res.json(response);
