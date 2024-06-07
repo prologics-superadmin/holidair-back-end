@@ -12,24 +12,38 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  first_name: {
+    type: String,
+    required: true,
+  },
+  last_name: {
+    type: String,
+    required: true,
+  },
   email: {
     type: String,
     required: true,
     unique: true,
   },
-  // phone_number: {
-  //   type: String,
-
-  //   required: true,
-  //   unique: true,
-  // },
+  phone: {
+    type: String,
+  },
   password: {
     type: String,
     required: true,
   },
-  // address: {
-  //   type: String,
-  // },
+  address: {
+    type: String,
+  },
+  gender: {
+    type: String,
+  },
+  nic: {
+    type: String,
+  },
+  dob: {
+    type: Date,
+  },
   user_role_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserRole",
@@ -81,9 +95,15 @@ const User = mongoose.model("User", userSchema);
 function validateUser(user) {
   const schema = Joi.object({
     user_name: Joi.string().required(),
+    first_name: Joi.string().required(),
+    last_name: Joi.string().required(),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
-    // address: Joi.string(),
+    address: Joi.string(),
+    phone: Joi.string(),
+    gender: Joi.string(),
+    dob: Joi.string(),
+    nic: Joi.string(),
     // user_role_id: Joi.string().required(),
     // phone_number: Joi.number().required(),
     // shop_name: Joi.string(),
