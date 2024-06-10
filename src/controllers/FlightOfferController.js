@@ -68,6 +68,14 @@ class FlightOfferController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+  async getFlightList(req, res) {
+    // try {
+    const response = await FlightOfferService.getFlightList(req.params.text);
+    res.status(200).json({ message: "", data: response });
+    // } catch (_) {
+    //   res.status(500).json({ error: "Internal server error" });
+    // }
+  }
 }
 
 module.exports = new FlightOfferController();

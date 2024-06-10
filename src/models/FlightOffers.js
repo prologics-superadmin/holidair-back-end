@@ -24,6 +24,15 @@ const FlightOfferSchema = new mongoose.Schema(
     airline_baggage: {
       type: String,
     },
+    start_date: {
+      type: Date,
+    },
+    end_date: {
+      type: Date,
+    },
+    reign: {
+      type: String,
+    },
     flight_offer: {
       type: Boolean,
     },

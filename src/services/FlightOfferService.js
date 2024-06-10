@@ -99,9 +99,12 @@ class FlightOfferService {
             airline_id: offers.airline_id.name,
             from: offers.from_location.name,
             to: offers.to_location.name,
+            start_date: offers.start_date,
+            end_date: offers.end_date,
             price: formatCurrency(offers.price),
+            reign: offers.reign,
           })),
-          dataCount: 0,
+          dataCount: result.length,
           currentPaginationIndex: page,
           dataPerPage: 20,
           message: "There are not matching records.",
@@ -127,8 +130,13 @@ class FlightOfferService {
 
   async getAllList(type) {
     try {
+      const currentDate = new Date();
       if (type == 1) {
-        const query = { is_deleted: false, worldwide_flight_offer: true };
+        const query = {
+          is_deleted: false,
+          worldwide_flight_offer: true,
+          end_date: { $gt: currentDate },
+        };
         const result = await FlightOffer.find(query)
           .sort({ _id: -1 }) // Sort in descending order based on _id to get the latest entries first
           .limit(4)
@@ -155,10 +163,17 @@ class FlightOfferService {
           airline_logo: offer.airline_id.logo,
           from: offer.from_location.name,
           to: offer.to_location.name,
+          start_date: offer.start_date,
+          end_date: offer.end_date,
           price: formatCurrency(offer.price),
+          reign: offer.reign,
         }));
       } else {
-        const query = { is_deleted: false, flight_offer: true };
+        const query = {
+          is_deleted: false,
+          flight_offer: true,
+          end_date: { $gt: currentDate },
+        };
         const result = await FlightOffer.find(query)
           .populate({
             path: "destination_id",
@@ -181,12 +196,56 @@ class FlightOfferService {
           name: offer.destination_id.name,
           image: offer.destination_id.image_url,
           airline_logo: offer.airline_id.logo,
+          start_date: offer.start_date,
+          end_date: offer.end_date,
           price: formatCurrency(offer.price),
+          reign: offer.reign,
         }));
       }
     } catch (error) {
       throw error;
     }
+  }
+
+  async getFlightList(type) {
+    const currentDate = new Date();
+    // try {
+    const query = {
+      is_deleted: false,
+      flight_offer: true,
+      end_date: { $gt: currentDate },
+      reign: type,
+    };
+    const result = await FlightOffer.find(query)
+      .populate({
+        path: "destination_id",
+        select: "name _id image_url", // Select only name field of the brand object
+      })
+      .populate({
+        path: "to_location",
+        select: "name _id", // Select only name field of the brand object
+      })
+      .populate({
+        path: "from_location",
+        select: "name _id", // Select only name field of the brand object
+      })
+      .populate({
+        path: "airline_id",
+        select: "name _id logo", // Select only name field of the brand object
+      });
+    return result.map((offer) => ({
+      id: offer._id,
+      name: offer.destination_id.name,
+      image: offer.destination_id.image_url,
+      airline_logo: offer.airline_id.logo,
+      start_date: offer.start_date,
+      end_date: offer.end_date,
+      price: formatCurrency(offer.price),
+      reign: offer.reign,
+    }));
+    // } catch (error) {
+    //   throw error;
+    // }
   }
 }
 

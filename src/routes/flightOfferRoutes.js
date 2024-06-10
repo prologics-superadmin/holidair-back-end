@@ -5,6 +5,7 @@ const router = express.Router();
 router.post("/", FlightOfferController.create);
 router.put("/:id", FlightOfferController.update);
 router.get("/get-list/:type", FlightOfferController.getAllList);
+router.get("/get-flight-list/:text", FlightOfferController.getFlightList);
 router.get("/", FlightOfferController.getAll);
 router.get("/:id", FlightOfferController.get);
 router.post("/list", FlightOfferController.getList);
