@@ -1,5 +1,6 @@
 const sendMail = require("../mail/mail");
 const FlightBookingService = require("../services/flight/FlightBookingService");
+const makeAPIRequest = require("../utils/flightRequest");
 
 class FlightBookingController {
   async bookFlight(req, res) {
@@ -15,6 +16,15 @@ class FlightBookingController {
       );
       const response = await FlightBookingService.getById(bookingDetails._id);
       await sendMail(bookingDetails.email, "booking", "");
+      res.status(200).json({ data: response });
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  }
+
+  async getSelectedFlightPriceSearch(req, res) {
+    try {
+      const response = await makeAPIRequest("post", "/flightprice", req.body);
       res.status(200).json({ data: response });
     } catch (error) {
       res.status(500).json({ error: error });
