@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const RolePermissionAssign = require("../../models/UserManagement/Permissions/RolePermissionAssign");
 const UserPermissionHandleService = require("./UserPermissionHandleService");
 const bcrypt = require("bcrypt");
+const UserRole = require("../../models/UserManagement/UserRole");
 
 /**
  * @class AuthServices
@@ -23,6 +24,19 @@ class AuthServices {
     try {
       // const { error } = validate(userData);
       // if (error) throw error.details[0].message;
+      // Find the role based on user_role_id
+      let userRol = await UserRole.findOne({ role: userData.user_role_id });
+
+      if (userRol) {
+      } else {
+        userRol = await UserRole.create({
+          role: "Customer",
+          status: true,
+        });
+      }
+
+      // Assign the found or newly created role's ID to userData.user_role_id
+      userData.user_role_id = userRol._id;
 
       const isEmailExist = await User.findOne({ email: userData.email });
       if (isEmailExist) throw "Email already exists";
