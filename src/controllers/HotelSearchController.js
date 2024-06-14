@@ -81,44 +81,51 @@ class HotelSearchController {
   }
 
   async getHotelContent(req, res) {
-    // try {
-    const params = `/hotel-content-api/1.0/hotels/${req.params.id}/details`;
-    const response = await makeHotelApiRequest("GET", params, {});
-    const { checkIn, checkOut, from, to, adults = 2, children = 1 } = req.body;
-    const stay = {
-      checkIn,
-      checkOut,
-    };
+    try {
+      const params = `/hotel-content-api/1.0/hotels/${req.params.id}/details`;
+      const response = await makeHotelApiRequest("GET", params, {});
+      const {
+        checkIn,
+        checkOut,
+        from,
+        to,
+        adults = 2,
+        children = 1,
+      } = req.body;
+      const stay = {
+        checkIn,
+        checkOut,
+      };
 
-    const occupancies = [
-      {
-        rooms: 1,
-        adults: 2,
-        children: 0,
-      },
-    ];
+      const occupancies = [
+        {
+          rooms: 1,
+          adults: 2,
+          children: 0,
+        },
+      ];
 
-    const requestBody = {
-      stay,
-      occupancies,
-      hotels: { hotel: [req.params.id] },
-    };
+      const requestBody = {
+        stay,
+        occupancies,
+        hotels: { hotel: [req.params.id] },
+      };
 
-    const hotelResponse = await makeHotelApiRequest(
-      "POST",
-      "hotel-api/3.0/hotels",
-      "",
-      requestBody
-    );
-    const finalResponse = {
-      response: response,
-      priceResponse: hotelResponse,
-    };
-    console.log(response);
-    res.status(200).json({ data: finalResponse });
-    // } catch (error) {
-    //   res.status(500).json({ error: error });
-    // }
+      const hotelResponse = await makeHotelApiRequest(
+        "POST",
+        "hotel-api/3.0/hotels",
+        "",
+        requestBody
+      );
+      const finalResponse = {
+        response: response,
+        priceResponse: hotelResponse,
+      };
+
+      res.status(200).json({ data: finalResponse });
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
   }
 }
 
