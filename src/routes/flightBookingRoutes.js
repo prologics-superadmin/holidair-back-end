@@ -7,5 +7,9 @@ router.post(
   "/get-prices",
   FlightBookingController.getSelectedFlightPriceSearch
 );
+router.put(
+  "/update-booking-status/:bookingId",
+  FlightBookingController.updateBookingStatus
+);
 
 module.exports = router;

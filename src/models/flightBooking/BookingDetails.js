@@ -2,6 +2,16 @@ const mongoose = require("mongoose");
 
 const BookingDetailsSchema = new mongoose.Schema(
   {
+    booking_id: {
+      type: String,
+    },
+    amount: {
+      type: Number,
+    },
+    booking_status: {
+      type: String,
+      default: "booking-created",
+    },
     key: {
       type: String,
     },

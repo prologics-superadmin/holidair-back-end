@@ -14,8 +14,7 @@ class FlightSearchController {
   async searchFlights(req, res) {
     try {
       const response = await makeAPIRequest("post", "/flightsearch", req.body);
-      console.log("response")
-      console.log(response)
+
       if (response.result.status === "OK") {
         const { highest, lowest } = await getHighestAndLowestPrices(
           response.result.airSolutions
