@@ -19,15 +19,22 @@ class FlightBookingController {
         "/flightpnr",
         req.body
       );
-      // res.status(200).json({ data: bookingResponse });
       const response = await FlightBookingService.getById(bookingDetails._id);
-      await sendMail(bookingDetails.email, "booking", "");
-      const finalResponse = {
-        flightBookingResponse: bookingResponse,
-        bookingResponse: response,
-      };
-
-      res.status(200).json({ data: finalResponse });
+      if (bookingResponse.result.status === "OK") {
+        await FlightBookingService.updateBookingConfirmationDetails(
+          bookingDetails._id,
+          bookingResponse.result.pnrInfo[0]
+        );
+        await sendMail(bookingDetails.email, "booking", "");
+        const finalResponse = {
+          status: "OK",
+          flightBookingResponse: bookingResponse,
+          bookingResponse: response,
+        };
+        res.status(200).json({ data: finalResponse });
+      } else {
+        res.status(500).json({ error: bookingResponse });
+      }
     } catch (error) {
       res.status(500).json({ error: error });
     }

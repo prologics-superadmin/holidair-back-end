@@ -5,6 +5,18 @@ const BookingDetailsSchema = new mongoose.Schema(
     booking_id: {
       type: String,
     },
+    airline_ref: {
+      type: String,
+    },
+    brightsun_reference: {
+      type: String,
+    },
+    rec_loc: {
+      type: String,
+    },
+    universal_rec_loc: {
+      type: String,
+    },
     amount: {
       type: Number,
     },

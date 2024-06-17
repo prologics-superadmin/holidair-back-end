@@ -85,6 +85,30 @@ class FlightBookingService {
       throw error;
     }
   }
+
+  async updateBookingConfirmationDetails(id, data) {
+    try {
+      const booking = await BookingDetails.findByIdAndUpdate(
+        id,
+        {
+          airline_ref: data.airlineRef,
+          brightsun_reference: data.brightsunReference,
+          rec_loc: data.recLoc,
+          universal_recLoc: data.universalRecLoc,
+        },
+        { new: true } // Return the updated document
+      );
+      if (booking) {
+        return booking;
+      } else {
+        console.log(`No booking found with ID: ${bookingId}`);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error creating pax detail:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new FlightBookingService();
