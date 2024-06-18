@@ -9,7 +9,6 @@ const HotelPaxDetailSchema = new mongoose.Schema(
     type: { type: String },
     name: { type: String },
     surname: { type: String },
-    is_lead_name: { type: Boolean },
   },
   { timestamps: true }
 );

@@ -1,5 +1,6 @@
 const sendMail = require("../mail/mail");
 const FlightBookingService = require("../services/flight/FlightBookingService");
+const HotelBookingService = require("../services/hotel/HotelBookingService");
 const makeAPIRequest = require("../utils/flightRequest");
 
 class FlightBookingController {
@@ -51,11 +52,26 @@ class FlightBookingController {
 
   async updateBookingStatus(req, res) {
     try {
-      const bookingDetails = await FlightBookingService.updateBookingStatus(
-        req.params.bookingId,
-        req.body
-      );
-      res.status(200).json({ data: bookingDetails });
+      // Check another string
+      if (req.params.bookingId.startsWith("F")) {
+        const bookingDetails = await FlightBookingService.updateBookingStatus(
+          req.params.bookingId,
+          req.body
+        );
+        res.status(200).json({ data: bookingDetails });
+      } else if (req.params.bookingId.startsWith("H")) {
+        console.log("yes");
+        const bookingDetails = await HotelBookingService.updateBookingStatus(
+          req.params.bookingId,
+          req.body
+        );
+        res.status(200).json({ data: bookingDetails });
+      } else {
+        console.log(`${str2} starts with neither 'F' nor 'H'`);
+        // Default condition if neither 'F' nor 'H'
+      }
+
+      // res.status(200).json({ data: bookingDetails });
     } catch (error) {
       res.status(500).json({ error: error });
     }

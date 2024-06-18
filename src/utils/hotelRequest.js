@@ -29,6 +29,7 @@ async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
     // console.log(response);
     return response.data;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }

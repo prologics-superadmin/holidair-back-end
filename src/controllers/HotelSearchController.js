@@ -84,14 +84,7 @@ class HotelSearchController {
     try {
       const params = `/hotel-content-api/1.0/hotels/${req.params.id}/details`;
       const response = await makeHotelApiRequest("GET", params, {});
-      const {
-        checkIn,
-        checkOut,
-        from,
-        to,
-        adults = 2,
-        children = 1,
-      } = req.body;
+      const { checkIn, checkOut, from, to, adults, rooms, children } = req.body;
       const stay = {
         checkIn,
         checkOut,
@@ -99,9 +92,9 @@ class HotelSearchController {
 
       const occupancies = [
         {
-          rooms: 1,
-          adults: 2,
-          children: 0,
+          rooms: rooms,
+          adults: adults,
+          children: children,
         },
       ];
 
