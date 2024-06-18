@@ -60,7 +60,6 @@ class FlightBookingController {
         );
         res.status(200).json({ data: bookingDetails });
       } else if (req.params.bookingId.startsWith("H")) {
-        console.log("yes");
         const bookingDetails = await HotelBookingService.updateBookingStatus(
           req.params.bookingId,
           req.body
