@@ -25,7 +25,7 @@ class FlightBookingController {
           bookingDetails._id,
           bookingResponse.result.pnrInfo[0]
         );
-        await sendMail(bookingDetails.email, "booking", "");
+        // await sendMail(bookingDetails.email, "booking", "");
         const finalResponse = {
           status: "OK",
           flightBookingResponse: bookingResponse,
