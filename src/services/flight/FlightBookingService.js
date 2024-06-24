@@ -109,6 +109,27 @@ class FlightBookingService {
       throw error;
     }
   }
+
+  async updatePaymentStatus(data) {
+    try {
+      if (data.STATUS == 5) {
+        await BookingDetails.findOneAndUpdate(
+          { booking_id: data.ORDERID },
+          { booking_status: "payment-success" },
+          { new: true } // Return the updated document
+        );
+      } else if (data.STATUS == 2) {
+        await BookingDetails.findOneAndUpdate(
+          { booking_id: data.ORDERID },
+          { booking_status: "payment-declined" },
+          { new: true } // Return the updated document
+        );
+      }
+    } catch (error) {
+      console.error("Error creating pax detail:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new FlightBookingService();

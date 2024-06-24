@@ -58,7 +58,26 @@ class FlightBookingController {
           req.params.bookingId,
           req.body
         );
-        res.status(200).json({ data: bookingDetails });
+        const params = {
+          AccountInfo: {
+            CompanyCode: process.env.HOLIDAY_AIR_COMPANY_CODE,
+            WebsiteName: process.env.HOLIDAY_AIR_WEBSITE_NAME,
+          },
+          BookingRef: bookingDetails.brightsun_reference,
+          ApplicationAccessMode:
+            process.env.HOLIDAY_AIR_APPLICATION_ACCESS_MODE,
+        };
+        const flightDetailsResponse = await makeAPIRequest(
+          "POST",
+          "/Getpnr",
+          params
+        );
+
+        const finalResponse = {
+          bookingDetails: bookingDetails,
+          bookingConfirmationDetails: flightDetailsResponse,
+        };
+        res.status(200).json({ data: finalResponse });
       } else if (req.params.bookingId.startsWith("H")) {
         const bookingDetails = await HotelBookingService.updateBookingStatus(
           req.params.bookingId,
@@ -71,6 +90,14 @@ class FlightBookingController {
       }
 
       // res.status(200).json({ data: bookingDetails });
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  }
+
+  async updatePaymentStatus(req, res) {
+    try {
+      await FlightBookingService.updatePaymentStatus(req.params);
     } catch (error) {
       res.status(500).json({ error: error });
     }

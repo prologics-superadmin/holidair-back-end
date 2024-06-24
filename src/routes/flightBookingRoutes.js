@@ -11,5 +11,9 @@ router.put(
   "/update-booking-status/:bookingId",
   FlightBookingController.updateBookingStatus
 );
+router.get(
+  "/update-booking-confirmation",
+  FlightBookingController.updatePaymentStatus
+);
 
 module.exports = router;
