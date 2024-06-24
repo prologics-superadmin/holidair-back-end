@@ -2,6 +2,7 @@ const sendMail = require("../mail/mail");
 const FlightBookingService = require("../services/flight/FlightBookingService");
 const HotelBookingService = require("../services/hotel/HotelBookingService");
 const makeAPIRequest = require("../utils/flightRequest");
+const makeHotelApiRequest = require("../utils/hotelRequest");
 
 class FlightBookingController {
   async bookFlight(req, res) {
@@ -83,7 +84,17 @@ class FlightBookingController {
           req.params.bookingId,
           req.body
         );
-        res.status(200).json({ data: bookingDetails });
+        const bookingDetailsResponse = await makeHotelApiRequest(
+          "GET",
+          `hotel-api/3.0/bookings/${bookingDetails.reference}`,
+          "",
+          ""
+        );
+        const finalResponse = {
+          bookingDetails: bookingDetails,
+          bookingConfirmationDetails: bookingDetailsResponse,
+        };
+        res.status(200).json({ data: finalResponse });
       } else {
         console.log(`${str2} starts with neither 'F' nor 'H'`);
         // Default condition if neither 'F' nor 'H'
