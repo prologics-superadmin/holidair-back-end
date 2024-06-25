@@ -3,9 +3,10 @@ const HotelBookingDetail = require("../../models/HotelBooking/BookingDetail");
 const PaxDetail = require("../../models/HotelBooking/HotelPaxDetail");
 
 class HotelBookingService {
-  async create(data) {
+  async create(data, userId) {
     try {
       const transformedData = {
+        user_id: userId,
         booking_id: await generateBookingID("HT"),
         name: data.holder.name,
         surname: data.holder.surname,

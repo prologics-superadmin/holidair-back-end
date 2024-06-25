@@ -4,9 +4,10 @@ const FlightCustomerAddress = require("../../models/flightBooking/FlightCustomer
 const PaxDetail = require("../../models/flightBooking/PaxDetail");
 
 class FlightBookingService {
-  async create(data) {
+  async create(data, userId = "") {
     try {
       const transformedData = {
+        user_id: userId,
         booking_id: await generateBookingID("FL"),
         key: data.Key,
         trip_type: data.TripType,

@@ -3,11 +3,26 @@ const FlightBookingService = require("../services/flight/FlightBookingService");
 const HotelBookingService = require("../services/hotel/HotelBookingService");
 const makeAPIRequest = require("../utils/flightRequest");
 const makeHotelApiRequest = require("../utils/hotelRequest");
+const jwt = require("jsonwebtoken");
 
 class FlightBookingController {
   async bookFlight(req, res) {
     try {
-      const bookingDetails = await FlightBookingService.create(req.body);
+      let decoded;
+      let userId = "";
+      const authToken = req.headers["x-access-token"];
+      if (authToken.split(" ")[1] !== undefined) {
+        decoded = jwt.verify(
+          authToken.split(" ")[1],
+          process.env.JWT_SECRET_KEY
+        );
+        userId = decoded.userId;
+      }
+
+      const bookingDetails = await FlightBookingService.create(
+        req.body,
+        userId
+      );
       await FlightBookingService.createFlightCustomerAddress(
         bookingDetails._id,
         req.body.addresses

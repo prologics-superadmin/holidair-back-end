@@ -31,7 +31,6 @@ class UserController {
         permissions: user.permissions,
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).json({ error: error.message || error });
     }
   }

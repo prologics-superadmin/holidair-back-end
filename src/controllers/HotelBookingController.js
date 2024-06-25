@@ -4,7 +4,20 @@ const makeHotelApiRequest = require("../utils/hotelRequest");
 class HotelBookingController {
   async bookHotel(req, res) {
     try {
-      const bookingResponse = await HotelBookingService.create(req.body);
+      let decoded;
+      let userId = "";
+      const authToken = req.headers["x-access-token"];
+      if (authToken.split(" ")[1] !== undefined) {
+        decoded = jwt.verify(
+          authToken.split(" ")[1],
+          process.env.JWT_SECRET_KEY
+        );
+        userId = decoded.userId;
+      }
+      const bookingResponse = await HotelBookingService.create(
+        req.body,
+        userId
+      );
       await HotelBookingService.createPaxDetails(
         bookingResponse._id,
         req.body.rooms

@@ -1,6 +1,7 @@
 const express = require("express");
 const FlightBookingController = require("../controllers/FlightBookingController");
 const router = express.Router();
+const auth = require("../middlewares/jwtMiddleware");
 
 router.post("/", FlightBookingController.bookFlight);
 router.post(
