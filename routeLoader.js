@@ -20,7 +20,7 @@ const attractionSearchRoutes = require("./src/routes/attractionSearchRoutes");
 const flightBookingRoutes = require("./src/routes/flightBookingRoutes");
 const hotelBookingRoutes = require("./src/routes/hotelBookingRoutes");
 const attractionBookingRoutes = require("./src/routes/attractionBookingRoutes");
-
+const userProfileRoutes = require("./src/routes/UserManagement/userProfileRoutes");
 module.exports = (app) => {
   // User routes
   app.use("/api/users", userRoutes);
@@ -39,4 +39,5 @@ module.exports = (app) => {
   app.use("/api/flight-booking", flightBookingRoutes);
   app.use("/api/hotel-booking", hotelBookingRoutes);
   app.use("/api/attraction-booking", attractionBookingRoutes);
+  app.use("/api/user-profile", userProfileRoutes);
 };

@@ -44,6 +44,9 @@ const BookingDetailSchema = new mongoose.Schema(
     remark: {
       type: String,
     },
+    hotel_data: {
+      type: Object,
+    },
   },
   { timestamps: true }
 );
