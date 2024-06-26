@@ -9,72 +9,50 @@ const jwt = require("jsonwebtoken");
 
 class FlightBookingController {
   async bookFlight(req, res) {
-    try {
-      let decoded;
-      let userId = "";
-      const authToken = req.headers["x-access-token"];
-      if (authToken.split(" ")[1] !== undefined) {
-        decoded = jwt.verify(
-          authToken.split(" ")[1],
-          process.env.JWT_SECRET_KEY
-        );
-        userId = decoded.userId;
-      }
-
-      const bookingDetails = await FlightBookingService.create(
-        req.body,
-        userId
-      );
-      await FlightBookingService.createFlightCustomerAddress(
-        bookingDetails._id,
-        req.body.addresses
-      );
-      await FlightBookingService.createPaxDetail(
-        bookingDetails._id,
-        req.body.Pax
-      );
-      const bookingResponse = await makeAPIRequest(
-        "POST",
-        "/flightpnr",
-        req.body
-      );
-      const response = await FlightBookingService.getById(bookingDetails._id);
-      if (bookingResponse.result.status === "OK") {
-        await FlightBookingService.updateBookingConfirmationDetails(
-          bookingDetails._id,
-          bookingResponse.result.pnrInfo[0]
-        );
-        console.log(bookingResponse.result.airSolutions[0].journey[0].airSegments[0].destination)
-        // await sendMail(bookingDetails.email, "booking", "");
-        // await sendMail("usdgayan14@gmail.com", "booking", holidayairBookingConfirm(
-        //   {
-        //     titel: "Flight",
-        //     booking_id: bookingDetails.booking_id,
-        //     from: response.result.airSolutions[0].journey[0].airSegments[0].originAirportName,
-        //     to: "Dubai",
-        //     location: "Colombo",
-        //     total: bookingDetails.amount
-        //   }
-        // ));
-
-        // await sendMail("usdgayan14@gmail.com", "booking", holidayairBookingFailed(
-        //   {
-        //     titel: "Flight",
-        //     booking_id: "123564"
-        //   }
-        // ));
-        const finalResponse = {
-          status: "OK",
-          flightBookingResponse: bookingResponse,
-          bookingResponse: response,
-        };
-        res.status(200).json({ data: finalResponse });
-      } else {
-        res.status(500).json({ error: bookingResponse });
-      }
-    } catch (error) {
-      res.status(500).json({ error: error });
+    // try {
+    let decoded;
+    let userId = "";
+    const authToken = req.headers["x-access-token"];
+    if (authToken.split(" ")[1] !== undefined) {
+      decoded = jwt.verify(authToken.split(" ")[1], process.env.JWT_SECRET_KEY);
+      userId = decoded.userId;
     }
+
+    const bookingDetails = await FlightBookingService.create(req.body, userId);
+    await FlightBookingService.createFlightCustomerAddress(
+      bookingDetails._id,
+      req.body.addresses
+    );
+    await FlightBookingService.createPaxDetail(
+      bookingDetails._id,
+      req.body.Pax
+    );
+    const bookingResponse = await makeAPIRequest(
+      "POST",
+      "/flightpnr",
+      req.body
+    );
+    const response = await FlightBookingService.getById(bookingDetails._id);
+    console.log(bookingResponse);
+    if (bookingResponse.result.status === "OK") {
+      await FlightBookingService.updateBookingConfirmationDetails(
+        bookingDetails._id,
+        bookingResponse.result.pnrInfo[0],
+        bookingResponse.result
+      );
+      // await sendMail(bookingDetails.email, "booking", "");
+      const finalResponse = {
+        status: "OK",
+        flightBookingResponse: bookingResponse,
+        bookingResponse: response,
+      };
+      res.status(200).json({ data: finalResponse });
+    } else {
+      res.status(500).json({ error: bookingResponse });
+    }
+    // } catch (error) {
+    //   res.status(500).json({ error: error });
+    // }
   }
 
   async getSelectedFlightPriceSearch(req, res) {

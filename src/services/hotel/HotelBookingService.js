@@ -59,6 +59,7 @@ class HotelBookingService {
         id,
         {
           reference: data.booking.reference,
+          hotel_data: data.booking,
         },
         { new: true }
       );

@@ -87,7 +87,7 @@ class FlightBookingService {
     }
   }
 
-  async updateBookingConfirmationDetails(id, data) {
+  async updateBookingConfirmationDetails(id, data, flightData) {
     try {
       const booking = await BookingDetails.findByIdAndUpdate(
         id,
@@ -96,6 +96,7 @@ class FlightBookingService {
           brightsun_reference: data.brightsunReference,
           rec_loc: data.recLoc,
           universal_recLoc: data.universalRecLoc,
+          flight_data: flightData,
         },
         { new: true } // Return the updated document
       );

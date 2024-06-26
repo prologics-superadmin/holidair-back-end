@@ -52,6 +52,9 @@ const BookingDetailsSchema = new mongoose.Schema(
     country_code: {
       type: String,
     },
+    flight_data: {
+      type: Object,
+    },
   },
   { timestamps: true }
 );
