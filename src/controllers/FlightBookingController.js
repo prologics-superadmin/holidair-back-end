@@ -1,3 +1,5 @@
+const holidayairBookingConfirm = require("../mail/holidayair-booking-confirm");
+const holidayairBookingFailed = require("../mail/holidayair-booking-failed");
 const sendMail = require("../mail/mail");
 const FlightBookingService = require("../services/flight/FlightBookingService");
 const HotelBookingService = require("../services/hotel/HotelBookingService");
@@ -42,7 +44,25 @@ class FlightBookingController {
           bookingDetails._id,
           bookingResponse.result.pnrInfo[0]
         );
+        console.log(bookingResponse.result.airSolutions[0].journey[0].airSegments[0].destination)
         // await sendMail(bookingDetails.email, "booking", "");
+        // await sendMail("usdgayan14@gmail.com", "booking", holidayairBookingConfirm(
+        //   {
+        //     titel: "Flight",
+        //     booking_id: bookingDetails.booking_id,
+        //     from: response.result.airSolutions[0].journey[0].airSegments[0].originAirportName,
+        //     to: "Dubai",
+        //     location: "Colombo",
+        //     total: bookingDetails.amount
+        //   }
+        // ));
+
+        // await sendMail("usdgayan14@gmail.com", "booking", holidayairBookingFailed(
+        //   {
+        //     titel: "Flight",
+        //     booking_id: "123564"
+        //   }
+        // ));
         const finalResponse = {
           status: "OK",
           flightBookingResponse: bookingResponse,
