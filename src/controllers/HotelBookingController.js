@@ -1,3 +1,6 @@
+const holidayairBookingConfirm = require("../mail/holidayair-booking-confirm");
+const holidayairBookingFailed = require("../mail/holidayair-booking-failed");
+const sendMail = require("../mail/mail");
 const HotelBookingService = require("../services/hotel/HotelBookingService");
 const makeHotelApiRequest = require("../utils/hotelRequest");
 const jwt = require("jsonwebtoken");
@@ -23,7 +26,7 @@ class HotelBookingController {
       "",
       req.body
     );
-    if (hotelBookingResponse.booking.status === "CONFIRMED") {
+    if (false) {
       await HotelBookingService.updateHotelBookingConfirmationDetails(
         bookingResponse._id,
         hotelBookingResponse
@@ -33,8 +36,27 @@ class HotelBookingController {
         hotelBookingResponse: hotelBookingResponse,
         bookingResponse: bookingResponse,
       };
+      // console.log(hotelBookingResponse.booking.hotel.checkOut)
+      await sendMail(bookingResponse.email, "Hotel confirmation", holidayairBookingConfirm(
+        {
+          titel: "Hotel",
+          booking_id: bookingResponse.booking_id,
+          status: false,
+          checkIn: hotelBookingResponse.booking.hotel.checkIn,
+          checkOut: hotelBookingResponse.booking.hotel.checkOut,
+          location: hotelBookingResponse.booking.hotel.destinationName,
+          total: hotelBookingResponse.booking.totalSellingRate,
+          hotelname: hotelBookingResponse.booking.hotel.name
+        }
+      ));
       res.status(200).json({ data: finalResponse });
     } else {
+      await sendMail(bookingResponse.email, "Hotel Failed", holidayairBookingFailed(
+        {
+          titel: "Hotel",
+          booking_id: bookingResponse.booking_id
+        }
+      ));
       res.status(500).json({ data: hotelBookingResponse });
     }
     // } catch (error) {

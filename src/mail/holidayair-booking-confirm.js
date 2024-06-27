@@ -67,14 +67,25 @@ module.exports = (data) => {
                                 <tr>
                                     <td
                                         style="padding: 20px; text-align: center; font-size: 16px; line-height: 24px;background-color: #f0f7f2;">
-                                        <p><strong>From:</strong> ${data.from}</p>
+                                         ${data.status ? `
+                                            <p><strong>From:</strong> ${data.from}</p>
                                         <p><strong>To:</strong> ${data.to}</p>
                                         <p><strong>Departure Date:</strong> ${data.departuredate}</p>
                                         <p><strong>Arrival Date:</strong> ${data.arrivaldate}</p>
                                         <p><strong>Airline:</strong> ${data.location}</p>
-                                        <p><strong>Total:</strong> £${data.total}</p>
-                                    </td>
-                                </tr>
+                                        <p><strong>Total:</strong> £${data.total}</p>`
+            :
+            `
+                                        <p><strong>Hotel Name:</strong> ${data.hotelname} - ${data.location}</p>
+                                        <p><strong>Check In:</strong> ${data.checkIn}</p>
+                                        <p><strong>Check Out:</strong> ${data.checkOut}</p>
+                                  
+                                        <p><strong>Total:</strong> £${data.total}</p>`}
+
+                                       
+      
+                                    </td >
+                                </tr >
                                 <tr>
                                     <td style="height:40px; text-align:center;">&nbsp;</td>
                                 </tr>
@@ -89,9 +100,9 @@ module.exports = (data) => {
                                 <tr>
                                     <td style="height:40px; text-align:center;">&nbsp;</td>
                                 </tr>
-                            </table>
-                        </td>
-                    </tr>
+                            </table >
+                        </td >
+                    </tr >
                     <tr>
                         <td style="height:20px;">&nbsp;</td>
                     </tr>
@@ -102,11 +113,11 @@ module.exports = (data) => {
                             </p>
                         </td>
                     </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
+                </table >
+            </td >
+        </tr >
+    </table >
+</body >
 
-</html>`;
+</html > `;
 };

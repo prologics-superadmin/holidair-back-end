@@ -64,6 +64,7 @@ class FlightBookingController {
         {
           titel: "Flight",
           booking_id: bookingDetails.booking_id,
+          status: true,
           from: data[0].origin,
           to: selectedObject.origin,
           departuredate: data[0].departDate,
