@@ -34,13 +34,46 @@ class FlightBookingController {
     );
     const response = await FlightBookingService.getById(bookingDetails._id);
     console.log(bookingResponse);
-    if (bookingResponse.result.status === "OK") {
+    if (bookingResponse && bookingResponse.result && bookingResponse.result.status === "OK") {
       await FlightBookingService.updateBookingConfirmationDetails(
         bookingDetails._id,
         bookingResponse.result.pnrInfo[0],
         bookingResponse.result
       );
-      // await sendMail(bookingDetails.email, "booking", "");
+
+
+      let selectedObject;
+
+      const data =
+        bookingResponse.result.airSolutions[0].journey[0]
+          .airSegments;
+
+      if (data.length % 2 === 0) {
+        // If the length is even, get the middle object
+        selectedObject = data[data.length / 2 - 1];
+      } else {
+        // If the length is odd, get the middle object
+        selectedObject = data[Math.floor(data.length / 2)];
+      }
+      console.log(data[0].origin)
+      console.log(selectedObject.origin)
+      console.log(data[0].departDate)
+      console.log(selectedObject.arrivalDate)
+
+      await sendMail(response.email, "Booking confirmation", holidayairBookingConfirm(
+        {
+          titel: "Flight",
+          booking_id: bookingDetails.booking_id,
+          from: data[0].origin,
+          to: selectedObject.origin,
+          departuredate: data[0].departDate,
+          arrivaldate: selectedObject.arrivalDate,
+          location: data[0].airlineName,
+          total: bookingDetails.amount
+        }
+      ));
+
+
       const finalResponse = {
         status: "OK",
         flightBookingResponse: bookingResponse,
@@ -48,6 +81,12 @@ class FlightBookingController {
       };
       res.status(200).json({ data: finalResponse });
     } else {
+      await sendMail(response.email, "Booking Failed", holidayairBookingFailed(
+        {
+          titel: "Flight",
+          booking_id: bookingDetails.booking_id
+        }
+      ));
       res.status(500).json({ error: bookingResponse });
     }
     // } catch (error) {

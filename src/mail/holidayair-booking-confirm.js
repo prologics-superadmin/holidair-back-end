@@ -67,10 +67,12 @@ module.exports = (data) => {
                                 <tr>
                                     <td
                                         style="padding: 20px; text-align: center; font-size: 16px; line-height: 24px;background-color: #f0f7f2;">
-                                        <p><strong>Your check-in:</strong> ${data.from}</p>
-                                        <p><strong>Your checkout:</strong> ${data.to}</p>
-                                        <p><strong>Location:</strong> ${data.location}</p>
-                                        <p><strong>Total:</strong> ${data.total}</p>
+                                        <p><strong>From:</strong> ${data.from}</p>
+                                        <p><strong>To:</strong> ${data.to}</p>
+                                        <p><strong>Departure Date:</strong> ${data.departuredate}</p>
+                                        <p><strong>Arrival Date:</strong> ${data.arrivaldate}</p>
+                                        <p><strong>Airline:</strong> ${data.location}</p>
+                                        <p><strong>Total:</strong> £${data.total}</p>
                                     </td>
                                 </tr>
                                 <tr>
