@@ -26,7 +26,7 @@ class HotelBookingController {
       "",
       req.body
     );
-    if (false) {
+    if (hotelBookingResponse.booking.status === "CONFIRMED") {
       await HotelBookingService.updateHotelBookingConfirmationDetails(
         bookingResponse._id,
         hotelBookingResponse
