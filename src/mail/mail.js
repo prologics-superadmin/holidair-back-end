@@ -4,8 +4,8 @@ const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   auth: {
-    user: "usdgayan14@gmail.com",
-    pass: "fbcr bcvy fjdv kdml",
+    user: "",
+    pass: "",
   },
 });
 
@@ -29,8 +29,6 @@ async function sendMail(receiverAddress, subject, template) {
       subject,
       html: template,
     });
-    console.error("Send");
-    console.error(mailInfo);
   } catch (error) {
     console.error(error);
     throw "Mail sending failed";
