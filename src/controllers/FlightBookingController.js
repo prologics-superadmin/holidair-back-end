@@ -70,21 +70,21 @@ class FlightBookingController {
           selectedObject = data[Math.floor(data.length / 2)];
         }
 
-        await sendMail(
-          response.email,
-          "Booking confirmation",
-          holidayairBookingConfirm({
-            titel: "Flight",
-            booking_id: bookingDetails.booking_id,
-            status: true,
-            from: data[0].origin,
-            to: selectedObject.origin,
-            departuredate: data[0].departDate,
-            arrivaldate: selectedObject.arrivalDate,
-            location: data[0].airlineName,
-            total: bookingDetails.amount,
-          })
-        );
+        // await sendMail(
+        //   response.email,
+        //   "Booking confirmation",
+        //   holidayairBookingConfirm({
+        //     titel: "Flight",
+        //     booking_id: bookingDetails.booking_id,
+        //     status: true,
+        //     from: data[0].origin,
+        //     to: selectedObject.origin,
+        //     departuredate: data[0].departDate,
+        //     arrivaldate: selectedObject.arrivalDate,
+        //     location: data[0].airlineName,
+        //     total: bookingDetails.amount,
+        //   })
+        // );
 
         const finalResponse = {
           status: "OK",
@@ -93,14 +93,14 @@ class FlightBookingController {
         };
         res.status(200).json({ data: finalResponse });
       } else {
-        await sendMail(
-          response.email,
-          "Booking Failed",
-          holidayairBookingFailed({
-            titel: "Flight",
-            booking_id: bookingDetails.booking_id,
-          })
-        );
+        // await sendMail(
+        //   response.email,
+        //   "Booking Failed",
+        //   holidayairBookingFailed({
+        //     titel: "Flight",
+        //     booking_id: bookingDetails.booking_id,
+        //   })
+        // );
         res.status(500).json({ error: bookingResponse });
       }
     } catch (error) {
