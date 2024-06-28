@@ -1,3 +1,5 @@
+const holidayairBookingConfirm = require("../mail/holidayair-booking-confirm");
+const holidayairBookingFailed = require("../mail/holidayair-booking-failed");
 const sendMail = require("../mail/mail");
 const FlightBookingService = require("../services/flight/FlightBookingService");
 const HotelBookingService = require("../services/hotel/HotelBookingService");
@@ -23,10 +25,7 @@ class FlightBookingController {
         userId = decoded.userId;
       }
 
-      const bookingDetails = await FlightBookingService.create(
-        req.body,
-        userId
-      );
+      const bookingDetails = await FlightBookingService.create(req.body, userId);
       await FlightBookingService.createFlightCustomerAddress(
         bookingDetails._id,
         req.body.addresses
@@ -41,13 +40,48 @@ class FlightBookingController {
         req.body
       );
       const response = await FlightBookingService.getById(bookingDetails._id);
-      if (bookingResponse.result.status === "OK") {
+      console.log(bookingResponse);
+      if (bookingResponse && bookingResponse.result && bookingResponse.result.status === "OK") {
         await FlightBookingService.updateBookingConfirmationDetails(
           bookingDetails._id,
           bookingResponse.result.pnrInfo[0],
           bookingResponse.result
         );
-        // await sendMail(bookingDetails.email, "booking", "");
+
+
+        let selectedObject;
+
+        const data =
+          bookingResponse.result.airSolutions[0].journey[0]
+            .airSegments;
+
+        if (data.length % 2 === 0) {
+          // If the length is even, get the middle object
+          selectedObject = data[data.length / 2 - 1];
+        } else {
+          // If the length is odd, get the middle object
+          selectedObject = data[Math.floor(data.length / 2)];
+        }
+        console.log(data[0].origin)
+        console.log(selectedObject.origin)
+        console.log(data[0].departDate)
+        console.log(selectedObject.arrivalDate)
+
+        await sendMail(response.email, "Booking confirmation", holidayairBookingConfirm(
+          {
+            titel: "Flight",
+            booking_id: bookingDetails.booking_id,
+            status: true,
+            from: data[0].origin,
+            to: selectedObject.origin,
+            departuredate: data[0].departDate,
+            arrivaldate: selectedObject.arrivalDate,
+            location: data[0].airlineName,
+            total: bookingDetails.amount
+          }
+        ));
+
+
         const finalResponse = {
           status: "OK",
           flightBookingResponse: bookingResponse,
@@ -55,6 +89,12 @@ class FlightBookingController {
         };
         res.status(200).json({ data: finalResponse });
       } else {
+        await sendMail(response.email, "Booking Failed", holidayairBookingFailed(
+          {
+            titel: "Flight",
+            booking_id: bookingDetails.booking_id
+          }
+        ));
         res.status(500).json({ error: bookingResponse });
       }
     } catch (error) {
