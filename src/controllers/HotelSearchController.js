@@ -1,3 +1,4 @@
+const { getHighestAndLowestPrices } = require("../helpers/hotelSearchHelper");
 const makeHotelApiRequest = require("../utils/hotelRequest");
 
 class HotelSearchController {
@@ -9,6 +10,7 @@ class HotelSearchController {
         req.body,
         ""
       );
+
       const hotelIds = response.hotels.map((hotel) => parseInt(hotel.code));
 
       const {
@@ -74,7 +76,17 @@ class HotelSearchController {
         return hotel;
       });
 
-      res.status(200).json({ data: mergedHotels });
+      const { highest, lowest } = await getHighestAndLowestPrices(
+        mergedHotels
+      );
+
+      res.status(200).json({
+        data: mergedHotels,
+        searchCriteria: {
+          minPrice: parseFloat(highest),
+          maxPrice: parseFloat(lowest),
+        },
+      });
     } catch (error) {
       res.status(500).json({ error: error });
     }

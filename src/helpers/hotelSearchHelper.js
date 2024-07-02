@@ -1,23 +1,5 @@
+
 async function getHighestAndLowestPrices(arr) {
-  if (!Array.isArray(arr) || arr.length === 0) {
-    return { highest: null, lowest: null };
-  }
-
-  let highest = arr[0].totalPrice;
-  let lowest = arr[0].totalPrice;
-
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i].totalPrice > highest) {
-      highest = arr[i].totalPrice;
-    }
-    if (arr[i].totalPrice < lowest) {
-      lowest = arr[i].totalPrice;
-    }
-  }
-
-  return { highest, lowest };
-}
-async function getHighestAndLowestPricesHotel(arr) {
   if (!Array.isArray(arr) || arr.length === 0) {
     return { highest: null, lowest: null };
   }
