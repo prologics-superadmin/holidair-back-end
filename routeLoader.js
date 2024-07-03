@@ -22,6 +22,7 @@ const hotelBookingRoutes = require("./src/routes/hotelBookingRoutes");
 const attractionBookingRoutes = require("./src/routes/attractionBookingRoutes");
 const userProfileRoutes = require("./src/routes/UserManagement/userProfileRoutes");
 const adminBookingRoutes = require("./src/routes/bookingRoutes");
+const markupPriceRoutes = require("./src/routes/markupPriceRoutes");
 module.exports = (app) => {
   // User routes
   app.use("/api/users", userRoutes);
@@ -42,4 +43,5 @@ module.exports = (app) => {
   app.use("/api/attraction-booking", attractionBookingRoutes);
   app.use("/api/user-profile", userProfileRoutes);
   app.use("/api/admin/bookings", adminBookingRoutes);
+  app.use("/api/markup-price", markupPriceRoutes);
 };

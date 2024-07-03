@@ -9,49 +9,52 @@ const {
   getAirportCodes,
 } = require("../helpers/flightSearchHelper");
 const makeAPIRequest = require("../utils/flightRequest");
+const { getPrice } = require("../services/MarkupPriceService");
+const MarkupPriceService = require("../services/MarkupPriceService");
 
 class FlightSearchController {
   async searchFlights(req, res) {
-    try {
-      const response = await makeAPIRequest("post", "/flightsearch", req.body);
+    // try {
+    const response = await makeAPIRequest("post", "/flightsearch", req.body);
 
-      if (response.result.status === "OK") {
-        const { highest, lowest } = await getHighestAndLowestPrices(
-          response.result.airSolutions
-        );
-        const stops = await getStopValues(response.result.airSolutions);
-        const flightDurations = await getUniqueTotalFlightDurations(
-          response.result.airSolutions
-        );
-        const baggageAllowances = await getUniqueBaggageAllowances(
-          response.result.airSolutions
-        );
-        const airports = await getUniqueAirports(response.result.airSolutions);
+    if (response.result.status === "OK") {
+      const { highest, lowest } = await getHighestAndLowestPrices(
+        response.result.airSolutions
+      );
+      const stops = await getStopValues(response.result.airSolutions);
+      const flightDurations = await getUniqueTotalFlightDurations(
+        response.result.airSolutions
+      );
+      const baggageAllowances = await getUniqueBaggageAllowances(
+        response.result.airSolutions
+      );
+      const airports = await getUniqueAirports(response.result.airSolutions);
 
-        const airportCodes = await getAirportCodes(
-          response.result.airSolutions
-        );
+      const airportCodes = await getAirportCodes(response.result.airSolutions);
 
-        const responseData = {
-          flightResults: response.result.airSolutions,
-          token: response.result.token,
-          searchCriteria: {
-            minPrice: lowest,
-            maxPrice: highest,
-            stops: stops,
-            flightDurations: flightDurations,
-            baggageAllowances: baggageAllowances,
-            airports: airports,
-            airportCodes: airportCodes,
-          },
-        };
-        res.status(200).json({ data: responseData });
-      } else {
-        res.status(500).json({ error: "API ERROR" });
-      }
-    } catch (error) {
-      res.status(500).json({ error: error });
+      const flightMarkupPrice = await MarkupPriceService.getPrice("flight");
+
+      const responseData = {
+        flightResults: response.result.airSolutions,
+        flightMarkupPrice: flightMarkupPrice.price,
+        token: response.result.token,
+        searchCriteria: {
+          minPrice: lowest,
+          maxPrice: highest,
+          stops: stops,
+          flightDurations: flightDurations,
+          baggageAllowances: baggageAllowances,
+          airports: airports,
+          airportCodes: airportCodes,
+        },
+      };
+      res.status(200).json({ data: responseData });
+    } else {
+      res.status(500).json({ error: "API ERROR" });
     }
+    // } catch (error) {
+    //   res.status(500).json({ error: error });
+    // }
   }
 
   async airportSearch(req, res) {
