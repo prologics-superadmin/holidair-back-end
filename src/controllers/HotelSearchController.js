@@ -88,7 +88,7 @@ class HotelSearchController {
           minPrice: parseFloat(highest),
           maxPrice: parseFloat(lowest),
         },
-        hotelMarkupPrice: hotelMarkupPrice,
+        hotelMarkupPrice: hotelMarkupPrice.price ?? 0,
       });
     } catch (error) {
       res.status(500).json({ error: error });
