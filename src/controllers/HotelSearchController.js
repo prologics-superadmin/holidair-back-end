@@ -1,4 +1,6 @@
 const { getHighestAndLowestPrices } = require("../helpers/hotelSearchHelper");
+const MarkupPriceService = require("../services/MarkupPriceService");
+const { getPrice } = require("../services/MarkupPriceService");
 const makeHotelApiRequest = require("../utils/hotelRequest");
 
 class HotelSearchController {
@@ -76,9 +78,9 @@ class HotelSearchController {
         return hotel;
       });
 
-      const { highest, lowest } = await getHighestAndLowestPrices(
-        mergedHotels
-      );
+      const { highest, lowest } = await getHighestAndLowestPrices(mergedHotels);
+
+      const hotelMarkupPrice = await MarkupPriceService.getPrice("hotel");
 
       res.status(200).json({
         data: mergedHotels,
@@ -86,6 +88,7 @@ class HotelSearchController {
           minPrice: parseFloat(highest),
           maxPrice: parseFloat(lowest),
         },
+        hotelMarkupPrice: hotelMarkupPrice,
       });
     } catch (error) {
       res.status(500).json({ error: error });
