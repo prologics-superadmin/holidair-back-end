@@ -10,6 +10,7 @@ const {
 
 const OTPService = require("../../services/UserManagement/OtpService"); // Update the path as per your project structure
 const { generateUUID } = require("../../utils/generateUUID");
+const UserRole = require("../../models/UserManagement/UserRole");
 
 class UserController {
   async register(req, res) {
@@ -128,11 +129,7 @@ class UserController {
 
       const users = await User.find(query)
         .skip(skip)
-        .limit(itemsPerPage)
-        .populate({
-          path: "user_role_id",
-          select: "role _id", // Select only name field of the brand object
-        });
+        .limit(itemsPerPage);
 
       // just for testing
       if (users.length) {
@@ -168,7 +165,63 @@ class UserController {
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
+  async getAllCustomer(req, res) {
+    const page = parseInt(req.body.currentPageIndex) || 1;
+    const filters = req.body.filters || {};
 
+    const itemsPerPage = req.body.dataPerPage;
+    const skip = (page - 1) * itemsPerPage;
+
+    try {
+      let query = {};
+      const userRol = await UserRole.findOne({ role: "Customer" });
+
+      if (filters) {
+        query = { ...filters };
+        query.user_role_id = userRol._id;
+      }
+
+      const users = await User.find(query)
+        .select("-password")
+        .select("-address")
+        .select("-created_at")
+        .select("-nic")
+        .select("-user_role_id")
+        .select("-updated_at")
+        .select("-is_deleted")
+        .select("-dob")
+        .select("-__v")
+        .skip(skip)
+        .limit(itemsPerPage);
+
+      const totalUsersCount = await User.countDocuments(query);
+
+      let response = {};
+
+      if (users.length === 0) {
+        response = {
+          data: users,
+          dataCount: totalUsersCount,
+          currentPaginationIndex: page,
+          dataPerPage: itemsPerPage,
+          message: "There are not matching records.",
+        };
+      } else {
+        response = {
+          data: users,
+          dataCount: totalUsersCount,
+          currentPaginationIndex: page,
+          dataPerPage: itemsPerPage,
+          message: "Data returned",
+        };
+      }
+
+      res.json(response);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
   async getUserById(req, res) {
     const id = req.params.id;
 

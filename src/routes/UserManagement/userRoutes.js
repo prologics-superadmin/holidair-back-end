@@ -9,8 +9,9 @@ router.post("/register", UserController.register);
 router.post("/login", UserController.login);
 router.get("/logout", auth, UserController.logout);
 router.post("/get-all", UserController.getAllUsers);
+router.post("/get-allcostomer", UserController.getAllCustomer);
 router.post("/get-hierarchy", UserController.getHierarchy); // new
-router.post("/export-csv", () => {});
+router.post("/export-csv", () => { });
 router.get("/me", auth, UserController.getMe);
 router.get("/get/:id", UserController.getUserById);
 router.patch("/update/:id", UserController.updateUser);
