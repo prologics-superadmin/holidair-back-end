@@ -171,16 +171,26 @@ class UserController {
 
     const itemsPerPage = req.body.dataPerPage;
     const skip = (page - 1) * itemsPerPage;
-
+    console.log(filters)
     try {
       let query = {};
       const userRol = await UserRole.findOne({ role: "Customer" });
 
       if (filters) {
-        query = { ...filters };
+        // query = { ...filters };
+        if (filters.First_Name && filters.First_Name !== "") {
+          query.first_name = { $regex: filters.First_Name, $options: "i" };
+        }
+        if (filters.Last_Name && filters.Last_Name !== "") {
+          query.last_name = { $regex: filters.Last_Name, $options: "i" };
+        }
+        if (filters.email && filters.email !== "") {
+          query.email = { $regex: filters.email, $options: "i" };
+        }
+
         query.user_role_id = userRol._id;
       }
-
+      console.log(query)
       const users = await User.find(query)
         .select("-password")
         .select("-address")

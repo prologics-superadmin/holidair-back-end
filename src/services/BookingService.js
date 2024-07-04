@@ -11,18 +11,35 @@ class BookingService {
 
       const filters = data.filters || {};
       let query = {};
-      //   query = {
-      //     $or: [{ user_id: data.userId }, { email: data.email }],
-      //   };
+      if (filters) {
+        if (filters.booking_id && filters.booking_id !== "") {
+          query.booking_id = { $regex: filters.booking_id, $options: "i" };
+        }
+        if (filters.email && filters.email !== "") {
+          query.email = { $regex: filters.email, $options: "i" };
+        }
+      }
+
+      if (filters.user && filters.user !== "") {
+        // Step 1: Find users with the matching user_name
+        const users = await User.find({ user_name: { $regex: filters.user, $options: "i" } });
+        const userIds = users.map(user => user._id);
+
+        // Step 2: Add user_id filter to the query
+        query.user_id = { $in: userIds };
+      }
       const flightBooking = await BookingDetails.find(query)
         .skip(skip)
-        .limit(itemsPerPage);
+        .limit(itemsPerPage)
+        .populate({
+          path: "user_id",
+          select: "user_name", // Select only name field of the brand object
+        });
       const count = await BookingDetails.countDocuments(query);
       const dataResponse = await Promise.all(flightBooking.map(async (booking, index) => {
-        const user = await User.findById(booking.user_id);
         return {
           id: booking.booking_id,
-          customer_name: user.user_name,
+          customer_name: booking.user_id.user_name,
           email: booking.email,
           provider_reference: booking.brightsun_reference ? booking.brightsun_reference : "",
           trip_type: booking.trip_type,
@@ -68,9 +85,16 @@ class BookingService {
 
       const filters = data.filters || {};
       let query = {};
-      //   query = {
-      //     $or: [{ user_id: data.userId }, { email: data.email }],
-      //   };
+      if (filters) {
+        if (filters.booking_id && filters.booking_id !== "") {
+          query.booking_id = { $regex: filters.booking_id, $options: "i" };
+        }
+        if (filters.email && filters.email !== "") {
+          query.email = { $regex: filters.email, $options: "i" };
+        }
+      }
+
+
       const hotelBookings = await HotelBookingDetail.find(query)
         .skip(skip)
         .limit(itemsPerPage);
