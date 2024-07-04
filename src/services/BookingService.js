@@ -35,14 +35,17 @@ class BookingService {
         .limit(itemsPerPage)
         .populate({
           path: "user_id",
-          select: "user_name", // Select only name field of the brand object
+          select: "first_name last_name", // Select only name field of the brand object
+          // Select only name field of the brand object
         });
       const count = await BookingDetails.countDocuments(query);
       const dataResponse = await Promise.all(
         flightBooking.map(async (booking, index) => {
+          console.log(booking.user_id);
           return {
             id: booking.booking_id,
-            customer_name: booking.user_id ? booking.user_id.user_name : "",
+            first_name: booking.user_id ? booking.user_id.first_name : "",
+            last_name: booking.user_id ? booking.user_id.last_name : "",
             email: booking.email,
             provider_reference: booking.brightsun_reference
               ? booking.brightsun_reference
