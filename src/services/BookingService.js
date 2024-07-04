@@ -41,7 +41,6 @@ class BookingService {
       const count = await BookingDetails.countDocuments(query);
       const dataResponse = await Promise.all(
         flightBooking.map(async (booking, index) => {
-          console.log(booking.user_id);
           return {
             id: booking.booking_id,
             first_name: booking.user_id ? booking.user_id.first_name : "",
