@@ -127,9 +127,14 @@ class UserController {
         }
       }
 
-      const users = await User.find(query)
-        .skip(skip)
-        .limit(itemsPerPage);
+      const customerRole = await UserRole.findOne({
+        role: { $regex: "^customer$", $options: "i" },
+      });
+      if (customerRole) {
+        query.user_role_id = { $ne: customerRole._id };
+      }
+
+      const users = await User.find(query).skip(skip).limit(itemsPerPage);
 
       // just for testing
       if (users.length) {
