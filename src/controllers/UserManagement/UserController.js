@@ -171,7 +171,7 @@ class UserController {
 
     const itemsPerPage = req.body.dataPerPage;
     const skip = (page - 1) * itemsPerPage;
-    console.log(filters)
+
     try {
       let query = {};
       const userRol = await UserRole.findOne({ role: "Customer" });
@@ -190,7 +190,7 @@ class UserController {
 
         query.user_role_id = userRol._id;
       }
-      console.log(query)
+
       const users = await User.find(query)
         .select("-password")
         .select("-address")
