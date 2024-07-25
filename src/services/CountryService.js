@@ -3,6 +3,7 @@ const Country = require("../models/Country");
 const City = require("../models/City");
 const Airport = require("../models/Airport");
 const Airline = require("../models/Airline");
+const Location = require("../models/Location");
 
 class CountryService {
   async getList(data) {
@@ -165,6 +166,30 @@ class CountryService {
       return result.map((airLine) => ({
         code: airLine.code,
         name: `${airLine.name} (${airLine.code})`,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getLocation(data) {
+    try {
+      const search = data.text;
+      const filters = data.filters || {};
+
+      const query = { ...filters };
+
+      if (search) {
+        query["$or"] = [
+          { code: { $regex: search, $options: "i" } },
+          { name: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const result = await Location.find(query);
+      return result.map((location) => ({
+        code: location.location,
+        name: `${location.name} (${location.location} - ${location.country_name})`,
       }));
     } catch (error) {
       throw error;

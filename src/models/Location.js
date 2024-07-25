@@ -10,7 +10,10 @@ const LocationSchema = new mongoose.Schema(
       type: String,
     },
     name: {
-      type: String, // Assuming storing image URL
+      type: String,
+    },
+    country_name: {
+      type: String,
     },
   },
   { timestamps: true }
