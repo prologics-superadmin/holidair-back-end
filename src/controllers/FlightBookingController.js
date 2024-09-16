@@ -8,6 +8,7 @@ const makeHotelApiRequest = require("../utils/hotelRequest");
 const jwt = require("jsonwebtoken");
 const penAirApiRequest = require("../utils/penAirRequest");
 const getLastDepartureDate = require("../helpers/genaralHelper");
+const { User } = require("../models/UserManagement/User");
 
 class FlightBookingController {
   async bookFlight(req, res) {
@@ -26,6 +27,23 @@ class FlightBookingController {
             process.env.JWT_SECRET_KEY
           );
           userId = decoded.userId;
+        }
+      } else {
+        const user = await User.findOne({
+          email: req.body.Email,
+          is_deleted: false,
+        });
+        if (user) {
+          userId = user._id;
+        } else {
+          // console.log(req.body.Pax);
+          const user = await User.create({
+            first_name: req.body.Pax[0].FirstName,
+            last_name: req.body.Pax[0].LastName,
+            email: req.body.Email,
+            user_name: req.body.Email.split("@")[0],
+          });
+          userId = user._id;
         }
       }
 
@@ -107,68 +125,67 @@ class FlightBookingController {
             response.flight_data.airSolutions[0].journey[0].airSegments[0].departDatetime.split(
               " "
             )[1];
-
-          console.log(ArrivalDate);
-          await penAirApiRequest({
-            TravelDate: "",
-            FirstName: requestData.Pax.FirstName,
-            LastName: requestData.Pax.LastName,
-            Title: requestData.Pax.Title,
-            Type: "",
-            EMail: requestData.Email,
-            TelePhone: requestData.ContactNo,
-            PassengerName: requestData.Pax.FirstName,
-
-            TicketNumber: req.body.TicketNumber,
-            AirlineId: req.body.AirlineId,
-            VLocator: req.body.VLocator,
-            TicketDate:
-              response.flight_data.airSolutions[0].latestTicketingTime.split(
-                "T"
-              )[0],
-            IATANumber: req.body.IATANumber,
-            Currency: "GBP",
-            FareSellAmt: "",
-            FareCommAmt: "",
-            TotalSellAmt: response.flight_data.airSolutions[0].totalPrice,
-            ValidatingAirlineId: "",
-            TicketType: "",
-            Issuer: "Brightsun",
-            TaxType: "",
-            TaxDescription: "",
-            TaxSellAmt: "",
-            VirtualCardNo: "",
-            FlightNumber:
-              response.flight_data.airSolutions[0].journey[0].airSegments[0]
-                .flightNumber,
-            ClassType:
-              response.flight_data.airSolutions[0].journey[0].airSegments[0]
-                .class,
-            Status:
-              response.flight_data.airSolutions[0].journey[0].airSegments[0]
-                .status,
-            DepartureDate: departDate,
-            ArrivalDate: ArrivalDate.date,
-            DepartureCityId: "",
-            ArrivalCityId: "",
-            DepartureTime: departTime,
-            ArrivalTime: ArrivalDate.time,
-            FareBasis: "",
-            DepartureTerminal: "",
-            ArrivalTerminal: "",
-            FlightTime: "",
-            Stops: 2,
-            PCC: "4CHC",
-          });
         }
 
         // const penAirResponse = await penAirApiRequest({});
+
+        // const penAir = await penAirApiRequest({
+        //   TravelDate: "",
+        //   FirstName: requestData.Pax.FirstName,
+        //   LastName: requestData.Pax.LastName,
+        //   Title: requestData.Pax.Title,
+        //   Type: "",
+        //   EMail: requestData.Email,
+        //   TelePhone: requestData.ContactNo,
+        //   PassengerName: requestData.Pax.FirstName,
+
+        //   TicketNumber: req.body.TicketNumber,
+        //   AirlineId: req.body.AirlineId,
+        //   VLocator: req.body.VLocator,
+        //   TicketDate:
+        //     response.flight_data.airSolutions[0].latestTicketingTime.split(
+        //       "T"
+        //     )[0],
+        //   IATANumber: req.body.IATANumber,
+        //   Currency: "GBP",
+        //   FareSellAmt: "",
+        //   FareCommAmt: "",
+        //   TotalSellAmt: response.flight_data.airSolutions[0].totalPrice,
+        //   ValidatingAirlineId: "",
+        //   TicketType: "",
+        //   Issuer: "Brightsun",
+        //   TaxType: "",
+        //   TaxDescription: "",
+        //   TaxSellAmt: "",
+        //   VirtualCardNo: "",
+        //   FlightNumber:
+        //     response.flight_data.airSolutions[0].journey[0].airSegments[0]
+        //       .flightNumber,
+        //   ClassType:
+        //     response.flight_data.airSolutions[0].journey[0].airSegments[0].class,
+        //   Status:
+        //     response.flight_data.airSolutions[0].journey[0].airSegments[0].status,
+        //   DepartureDate: departDate,
+        //   ArrivalDate: ArrivalDate.date,
+        //   DepartureCityId: "",
+        //   ArrivalCityId: "",
+        //   DepartureTime: departTime,
+        //   ArrivalTime: ArrivalDate.time,
+        //   FareBasis: "",
+        //   DepartureTerminal: "",
+        //   ArrivalTerminal: "",
+        //   FlightTime: "",
+        //   Stops: 2,
+        //   PCC: "4CHC",
+        //   BookingId: bookingDetails.booking_id,
+        // });
 
         // res.status(200).json({ data: penAirResponse });
         const finalResponse = {
           status: "OK",
           flightBookingResponse: bookingResponse,
           bookingResponse: response,
+          data: penAir,
         };
         res.status(200).json({ data: finalResponse });
       } else {
