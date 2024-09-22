@@ -185,7 +185,7 @@ class FlightBookingController {
           status: "OK",
           flightBookingResponse: bookingResponse,
           bookingResponse: response,
-          data: penAir,
+          data: "",
         };
         res.status(200).json({ data: finalResponse });
       } else {
