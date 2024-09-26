@@ -44,6 +44,9 @@ async function penAirApiRequest(data) {
       FlightTime,
       Stops,
       PCC,
+      BookingId,
+      Provider,
+      PNR,
     } = data;
 
     const xmlData = `<?xml version="1.0" encoding="utf-8"?>
@@ -56,9 +59,9 @@ async function penAirApiRequest(data) {
               <Username>HolidayAir</Username>
               <Password>3B68386438759368</Password>
             </Login>
-            <Version>OTJFDE</Version>
-            <Provider>SABRE</Provider>
-            <PNRLocator>OTJFDE</PNRLocator>
+            <Version>100</Version>
+            <Provider>${Provider}</Provider>
+            <PNRLocator>${PNR}</PNRLocator>
             <Source>PENXML_SABRE</Source>
             <FolderMaster>
               <OrderNo></OrderNo>
@@ -67,8 +70,8 @@ async function penAirApiRequest(data) {
               <MarketingCode></MarketingCode>
               <DestinationCityId></DestinationCityId>
               <BusinessAreaId></BusinessAreaId>
-              <BookedBy>HM</BookedBy>
-              <InetRef></InetRef>
+              <BookedBy></BookedBy>
+              <InetRef>${BookingId}</InetRef>
               <ForeignCurrencyId></ForeignCurrencyId>
               <BranchId></BranchId>
               <TravelDate>${TravelDate}</TravelDate>
@@ -154,8 +157,8 @@ async function penAirApiRequest(data) {
       data: xmlData,
     });
 
-    console.log("xml", xmlData);
-    // console.log(response.data);
+    // console.log("xml", xmlData);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     fs.writeFileSync(
