@@ -153,19 +153,24 @@ async function penAirApiRequest(data) {
       url: "https://penairdemo17.pensupport.co.uk/PenAIR/Penairdemo17/WebServices/FolderOrder2Cash/FolderOrder2Cash.asmx",
       headers: {
         "Content-Type": "text/xml",
+        SOAPAction: "http://www.penguininc.com/FolderCreateClient",
       },
       data: xmlData,
+      timeout: 5000, // Increase timeout to 5 seconds
+      maxContentLength: 2000000, // Limit response size to 2MB (adjust as needed)
     });
 
-    // console.log("xml", xmlData);
-    console.log(response.data);
     return response.data;
   } catch (error) {
-    fs.writeFileSync(
-      "error_log.txt",
-      `Error: ${error.message}\nStack: ${error.stack}`
-    );
-    return error;
+    if (error.response) {
+      console.log("Response Data:", error.response.data);
+      console.log("Response Status:", error.response.status);
+      console.log("Response Headers:", error.response.headers);
+    } else if (error.request) {
+      console.log("No response received", error.request);
+    } else {
+      console.log("Error:", error.message);
+    }
   }
 }
 

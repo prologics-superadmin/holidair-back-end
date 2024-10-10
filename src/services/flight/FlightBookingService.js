@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 
 class FlightBookingService {
   async create(data, userId) {
-    console.log(userId);
     try {
       const transformedData = {
         user_id: userId ?? "",
@@ -20,6 +19,7 @@ class FlightBookingService {
         contact_number: data.ContactNo,
         country_code: data.CountryDialingCode,
         amount: data.amount,
+        markup_amount: data.markup_value,
       };
 
       return await BookingDetails.create(transformedData);
@@ -146,6 +146,32 @@ class FlightBookingService {
       }
     } catch (error) {
       console.error("Error creating pax detail:", error);
+      throw error;
+    }
+  }
+
+  async getPaxDetailsByBookingId(bookingId) {
+    try {
+      const paxDetails = await PaxDetail.find({ flight_booking_id: bookingId })
+        .populate("flight_booking_id") // Populating flight_booking_id reference if needed
+        .exec();
+
+      return paxDetails;
+    } catch (error) {
+      console.error("Error creating pax detail:", error);
+      throw error;
+    }
+  }
+
+  async updatePenAirOderId(bookingId, penAirId) {
+    try {
+      return await BookingDetails.findByIdAndUpdate(
+        bookingId, // This should be the _id of the document
+        { penair_order_id: penAirId }, // The update object
+        { new: true, useFindAndModify: false } // Options: return the updated document
+      );
+    } catch (error) {
+      console.error("Error creating penair id:", error);
       throw error;
     }
   }

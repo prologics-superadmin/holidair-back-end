@@ -6,9 +6,15 @@ const HotelBookingService = require("../services/hotel/HotelBookingService");
 const makeAPIRequest = require("../utils/flightRequest");
 const makeHotelApiRequest = require("../utils/hotelRequest");
 const jwt = require("jsonwebtoken");
-const penAirApiRequest = require("../utils/penAirRequest");
+
 const getLastDepartureDate = require("../helpers/genaralHelper");
 const { User } = require("../models/UserManagement/User");
+const penAirApiRequest = require("../utils/penAirRequest");
+const MarkupService = require("../services/MarkupService");
+const { parseString } = require("xml2js");
+const fs = require("fs");
+const paymentConfirmationRequest = require("../utils/paymantConfirmationRequest");
+const penAirBookingId = require("../helpers/penAirBookingId");
 
 class FlightBookingController {
   async bookFlight(req, res) {
@@ -67,8 +73,6 @@ class FlightBookingController {
 
       const response = await FlightBookingService.getById(bookingDetails._id);
 
-      // console.log(response.flight_data);
-
       const requestData = req.body;
 
       let ArrivalDate = "";
@@ -120,8 +124,6 @@ class FlightBookingController {
 
         // const penAirResponse = await penAirApiRequest();
 
-        console.log(bookingResponse.result.airSolutions[0].latestTicketingTime);
-
         if (
           bookingResponse.result != null ||
           bookingResponse.result != undefined
@@ -139,10 +141,7 @@ class FlightBookingController {
               " "
             )[1];
 
-          ticketDate =
-            bookingResponse.result.airSolutions[0].latestTicketingTime.split(
-              "T"
-            )[0];
+          ticketDate = new Date().toISOString().split("T")[0];
         }
 
         const dateStr = departDate;
@@ -161,12 +160,13 @@ class FlightBookingController {
 
           TicketNumber: req.body.TicketNumber,
           AirlineId: req.body.AirlineId,
-          VLocator: req.body.VLocator,
+          VLocator: "",
           TicketDate: ticketDate,
           IATANumber: req.body.IATANumber,
           Currency: "GBP",
-          FareSellAmt: "",
-          FareCommAmt: "",
+          FareSellAmt:
+            parseFloat(response.amount) - parseFloat(response.markup_amount),
+          FareCommAmt: response.markup_amount,
           TotalSellAmt: response.amount,
           ValidatingAirlineId: "",
           TicketType: "",
@@ -205,6 +205,12 @@ class FlightBookingController {
           PNR: bookingResponse.result.pnrInfo[0].brightsunReference,
         });
 
+        const orderNumber = await penAirBookingId(penAir);
+        await FlightBookingService.updatePenAirOderId(
+          bookingDetails._id,
+          orderNumber
+        );
+
         // res.status(200).json({ data: penAirResponse });
         const finalResponse = {
           status: "OK",
@@ -232,6 +238,24 @@ class FlightBookingController {
   async getSelectedFlightPriceSearch(req, res) {
     try {
       const response = await makeAPIRequest("post", "/flightprice", req.body);
+      const totalPrice1 = response.result.airSolutions[0].totalPrice;
+      const totalPrice2 = response.result.airSolutions[1].totalPrice;
+
+      const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
+
+      // Calculate the new total with commission
+      const totalWithCommission1 = totalPrice1 + flightMarkupPrice.amount ?? 0;
+      const totalWithCommission2 = totalPrice2 + flightMarkupPrice.amount ?? 0;
+
+      // Add the new property to the air solution object
+      response.result.airSolutions[0].totalWithCommission =
+        totalWithCommission1;
+      response.result.airSolutions[0].markupValue =
+        flightMarkupPrice.amount ?? 0;
+      response.result.airSolutions[1].totalWithCommission =
+        totalWithCommission2;
+      response.result.airSolutions[1].markupValue =
+        flightMarkupPrice.amount ?? 0;
       res.status(200).json({ data: response });
     } catch (error) {
       res.status(500).json({ error: error });
@@ -260,6 +284,35 @@ class FlightBookingController {
           "/Getpnr",
           pnrReqParams
         );
+
+        await sendMail(
+          bookingDetails.email,
+          "Booking confirmation",
+          holidayairBookingConfirm({
+            titel: "Flight",
+            booking_id: bookingDetails.booking_id,
+            status: true,
+            from: bookingDetails.flight_data.airSolutions[0].journey[0]
+              .airSegments[0].origin,
+            to: bookingDetails.flight_data.airSolutions[0].journey[0]
+              .airSegments[1].destination,
+            departuredate:
+              bookingDetails.flight_data.airSolutions[0].journey[0]
+                .airSegments[0].departDatetime,
+            arrivaldate:
+              bookingDetails.flight_data.airSolutions[0].journey[0]
+                .airSegments[1].arrivalDatetime,
+            location: "TEST",
+            total: bookingDetails.amount,
+          })
+        );
+
+        const penAir = await paymentConfirmationRequest({
+          PNR: bookingDetails.flight_data.pnrInfo[0].brightsunReference,
+          OrderNumber: bookingDetails.penair_order_id,
+          BookingId: req.params.bookingId,
+          Amount: bookingDetails.amount,
+        });
 
         // const eTicketReqParams = {
 

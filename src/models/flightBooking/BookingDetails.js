@@ -24,6 +24,9 @@ const BookingDetailsSchema = new mongoose.Schema(
     amount: {
       type: Number,
     },
+    markup_amount: {
+      type: Number,
+    },
     booking_status: {
       type: String,
       default: "booking-created",
@@ -50,6 +53,9 @@ const BookingDetailsSchema = new mongoose.Schema(
       type: String,
     },
     country_code: {
+      type: String,
+    },
+    penair_order_id: {
       type: String,
     },
     flight_data: {
