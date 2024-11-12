@@ -41,7 +41,8 @@ class FlightSearchController {
 
         const responseData = {
           flightResults: response.result.airSolutions,
-          flightMarkupPrice: flightMarkupPrice.amount ?? 0,
+          // flightMarkupPrice: flightMarkupPrice.amount ?? 0,
+          flightMarkupPrice: 0,
           token: response.result.token,
           searchCriteria: {
             minPrice: lowest,
