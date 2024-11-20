@@ -257,12 +257,16 @@ class FlightBookingController {
     const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
 
     // Calculate the new total with commission
-    const totalWithCommission1 = totalPrice1 + flightMarkupPrice.amount ?? 0;
-    const totalWithCommission2 = totalPrice2 + flightMarkupPrice.amount ?? 0;
+    const totalWithCommission1 =
+      totalPrice1 + flightMarkupPrice ? flightMarkupPrice.amount ?? 0 : 0;
+    const totalWithCommission2 =
+      totalPrice2 + flightMarkupPrice ? flightMarkupPrice.amount ?? 0 : 0;
 
     // Add the new property to the air solution object
     response.result.airSolutions[0].totalWithCommission = totalWithCommission1;
-    response.result.airSolutions[0].markupValue = flightMarkupPrice.amount ?? 0;
+    response.result.airSolutions[0].markupValue = amount
+      ? flightMarkupPrice.amount ?? 0
+      : 0;
     if (response.result.airSolutions[1]) {
       response.result.airSolutions[1].totalWithCommission =
         totalWithCommission2;
@@ -440,7 +444,7 @@ class FlightBookingController {
       );
 
       await sendMail(
-        "bookings@holidayair.com",
+        process.env.BOOKING_REQUEST_EMAIL,
         "Booking request",
         holidayairBookingDetails({
           titel: "Flight",
