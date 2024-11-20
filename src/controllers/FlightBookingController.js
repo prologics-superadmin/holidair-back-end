@@ -257,10 +257,12 @@ class FlightBookingController {
     const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
 
     // Calculate the new total with commission
-    const totalWithCommission1 =
-      totalPrice1 + flightMarkupPrice ? flightMarkupPrice.amount ?? 0 : 0;
-    const totalWithCommission2 =
-      totalPrice2 + flightMarkupPrice ? flightMarkupPrice.amount ?? 0 : 0;
+    const totalWithCommission1 = flightMarkupPrice
+      ? flightMarkupPrice.amount ?? 0
+      : 0;
+    const totalWithCommission2 = flightMarkupPrice
+      ? flightMarkupPrice.amount ?? 0
+      : 0;
 
     // Add the new property to the air solution object
     response.result.airSolutions[0].totalWithCommission = totalWithCommission1;
