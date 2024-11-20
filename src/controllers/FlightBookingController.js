@@ -248,9 +248,7 @@ class FlightBookingController {
       const totalPrice1 = response.result.airSolutions[0]
         ? response.result.airSolutions[0]?.totalPrice ?? 0
         : 0;
-      const totalPrice2 = response.result.airSolutions[1]
-        ? response.result.airSolutions[1].totalPrice
-        : 0;
+      const totalPrice2 = 0;
 
       const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
 
