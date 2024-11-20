@@ -46,7 +46,7 @@ module.exports = (data) => {
                                 <!-- Title -->
                                 <tr>
                                     <td colspan="2" style="padding:0 15px;text-align:center;">
-                                        <h1 style="color:#1e1e2d; font-weight:700; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Booking Details</h1>
+                                        <h1 style="color:#1e1e2d; font-weight:700; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Booking Request</h1>
                                         <span style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; 
                                         width:100px;"></span>
                                     </td>
