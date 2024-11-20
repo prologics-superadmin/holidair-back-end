@@ -1,7 +1,7 @@
 const axios = require("axios");
 async function paymentConfirmationRequest(data) {
   try {
-    const { PNR, OrderNumber, BookingId, Amount } = data;
+    const { PNR, OrderNumber, BookingId, Amount, TransactionId, TaxId } = data;
     const xmlData = `<?xml version="1.0" encoding="utf-8"?>
   <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
     <soap12:Body>
@@ -14,15 +14,16 @@ async function paymentConfirmationRequest(data) {
             </Login>
             <PNRLocator>${PNR}</PNRLocator>
             <OrderNo>${OrderNumber}</OrderNo>
-  <InetRef>${BookingId}</InetRef>
+            <InetRef>${BookingId}</InetRef>
             <Payment>
               <PaymentDetails>
+                <VendorTxCode>${TaxId}</VendorTxCode>
+                <TransactionId>${TransactionId}</TransactionId>
                 <Amount>${Amount}</Amount>
                 <Currency>GBP</Currency>
                 <PaymentType>Bank</PaymentType>
                 <PaymentMethod>BACS</PaymentMethod>
                 <PaymentRef>Reference</PaymentRef>
-                <BankUserCode>xxxx</BankUserCode>
               </PaymentDetails>
             </Payment>
           </FolderReceipt>
@@ -32,7 +33,7 @@ async function paymentConfirmationRequest(data) {
   </soap12:Envelope>
   `;
 
-    console.log(xmlData);
+    // console.log(xmlData);
 
     const response = await axios({
       method: "POST",
@@ -44,7 +45,7 @@ async function paymentConfirmationRequest(data) {
     });
 
     // console.log("xml", xmlData);
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     fs.writeFileSync(
