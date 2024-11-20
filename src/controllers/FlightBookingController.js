@@ -266,7 +266,7 @@ class FlightBookingController {
 
     // Add the new property to the air solution object
     response.result.airSolutions[0].totalWithCommission = totalWithCommission1;
-    response.result.airSolutions[0].markupValue = amount
+    response.result.airSolutions[0].markupValue = flightMarkupPrice
       ? flightMarkupPrice.amount ?? 0
       : 0;
     if (response.result.airSolutions[1]) {
