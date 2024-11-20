@@ -440,8 +440,8 @@ class FlightBookingController {
       );
 
       await sendMail(
-        "nayanadarshana1@gmail.com",
-        "Booking confirmation",
+        "bookings@holidayair.com",
+        "Booking request",
         holidayairBookingDetails({
           titel: "Flight",
           booking_id: bookingDetails.booking_id,
