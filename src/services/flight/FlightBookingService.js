@@ -163,13 +163,43 @@ class FlightBookingService {
     }
   }
 
-  async updatePenAirOderId(bookingId, penAirId) {
+  async updatePenAirOderId(bookingId, penAirId, transactionId, taxId) {
     try {
       return await BookingDetails.findByIdAndUpdate(
         bookingId, // This should be the _id of the document
-        { penair_order_id: penAirId }, // The update object
+        {
+          penair_order_id: penAirId,
+          transaction_id: transactionId,
+          tax_id: taxId,
+        }, // The update object
         { new: true, useFindAndModify: false } // Options: return the updated document
       );
+    } catch (error) {
+      console.error("Error creating penair id:", error);
+      throw error;
+    }
+  }
+
+  async mainPaxDetails(bookingId) {
+    try {
+      // Find the lead passenger (where is_lead_name is true) by flight_booking_id
+      const leadPax = await PaxDetail.findOne({
+        flight_booking_id: bookingId,
+        is_lead_name: true,
+      });
+
+      if (!leadPax) {
+        throw new Error(
+          "Lead passenger not found for the provided booking ID."
+        );
+      }
+
+      // Combine first name, middle name, and last name to form the full name
+      const fullName = `${leadPax.first_name || ""} ${
+        leadPax.middle_name || ""
+      } ${leadPax.last_name || ""}`.trim();
+
+      return fullName;
     } catch (error) {
       console.error("Error creating penair id:", error);
       throw error;

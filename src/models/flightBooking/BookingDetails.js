@@ -58,6 +58,12 @@ const BookingDetailsSchema = new mongoose.Schema(
     penair_order_id: {
       type: String,
     },
+    transaction_id: {
+      type: String,
+    },
+    tax_id: {
+      type: String,
+    },
     flight_data: {
       type: Object,
     },

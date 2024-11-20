@@ -15,6 +15,8 @@ const { parseString } = require("xml2js");
 const fs = require("fs");
 const paymentConfirmationRequest = require("../utils/paymantConfirmationRequest");
 const penAirBookingId = require("../helpers/penAirBookingId");
+const transactionIdGenerator = require("../helpers/transactionIdGenerator");
+const PaxDetail = require("../models/flightBooking/PaxDetail");
 
 class FlightBookingController {
   async bookFlight(req, res) {
@@ -205,10 +207,14 @@ class FlightBookingController {
           PNR: bookingResponse.result.pnrInfo[0].brightsunReference,
         });
 
+        const transactionId = await transactionIdGenerator();
+        const taxId = await transactionIdGenerator("TX");
         const orderNumber = await penAirBookingId(penAir);
         await FlightBookingService.updatePenAirOderId(
           bookingDetails._id,
-          orderNumber
+          orderNumber,
+          transactionId,
+          taxId
         );
 
         // res.status(200).json({ data: penAirResponse });
@@ -238,24 +244,40 @@ class FlightBookingController {
   async getSelectedFlightPriceSearch(req, res) {
     try {
       const response = await makeAPIRequest("post", "/flightprice", req.body);
-      const totalPrice1 = response.result.airSolutions[0].totalPrice;
-      const totalPrice2 = response.result.airSolutions[1].totalPrice;
+
+      const totalPrice1 = response.result.airSolutions[0]
+        ? response.result.airSolutions[0]?.totalPrice ?? 0
+        : 0;
+      const totalPrice2 = response.result.airSolutions[1]
+        ? response.result.airSolutions[1].totalPrice
+        : 0;
 
       const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
 
       // Calculate the new total with commission
-      const totalWithCommission1 = totalPrice1 + flightMarkupPrice.amount ?? 0;
-      const totalWithCommission2 = totalPrice2 + flightMarkupPrice.amount ?? 0;
+      const totalWithCommission1 =
+        totalPrice1 + flightMarkupPrice ? flightMarkupPrice.amount : 0;
+      // const totalWithCommission1 = totalPrice1 + flightMarkupPrice.amount ?? 0;
+      const totalWithCommission2 =
+        totalPrice2 + flightMarkupPrice ? flightMarkupPrice.amount : 0;
+      // const totalWithCommission2 = totalPrice2 + flightMarkupPrice.amount ?? 0;
 
       // Add the new property to the air solution object
       response.result.airSolutions[0].totalWithCommission =
         totalWithCommission1;
       response.result.airSolutions[0].markupValue =
-        flightMarkupPrice.amount ?? 0;
-      response.result.airSolutions[1].totalWithCommission =
-        totalWithCommission2;
-      response.result.airSolutions[1].markupValue =
-        flightMarkupPrice.amount ?? 0;
+        flightMarkupPrice?.amount ?? 0;
+
+      if (
+        response.result.airSolutions[1] &&
+        response.result.airSolutions[1].totalWithCommission
+      ) {
+        response.result.airSolutions[1].totalWithCommission =
+          totalWithCommission2;
+        response.result.airSolutions[1].markupValue =
+          flightMarkupPrice?.amount ?? 0;
+      }
+
       res.status(200).json({ data: response });
     } catch (error) {
       res.status(500).json({ error: error });
@@ -263,93 +285,186 @@ class FlightBookingController {
   }
 
   async updateBookingStatus(req, res) {
-    try {
-      // Check another string
-      if (req.params.bookingId.startsWith("F")) {
-        const bookingDetails = await FlightBookingService.updateBookingStatus(
-          req.params.bookingId,
-          req.body
-        );
-        const pnrReqParams = {
-          AccountInfo: {
-            CompanyCode: process.env.HOLIDAY_AIR_COMPANY_CODE,
-            WebsiteName: process.env.HOLIDAY_AIR_WEBSITE_NAME,
-          },
-          BookingRef: bookingDetails.brightsun_reference,
-          ApplicationAccessMode:
-            process.env.HOLIDAY_AIR_APPLICATION_ACCESS_MODE,
-        };
-        const flightDetailsResponse = await makeAPIRequest(
-          "POST",
-          "/Getpnr",
-          pnrReqParams
-        );
+    // try {
+    // Check another string
+    if (req.params.bookingId.startsWith("F")) {
+      const bookingDetails = await FlightBookingService.updateBookingStatus(
+        req.params.bookingId,
+        req.body
+      );
 
-        await sendMail(
-          bookingDetails.email,
-          "Booking confirmation",
-          holidayairBookingConfirm({
-            titel: "Flight",
-            booking_id: bookingDetails.booking_id,
-            status: true,
-            from: bookingDetails.flight_data.airSolutions[0].journey[0]
-              .airSegments[0].origin,
-            to: bookingDetails.flight_data.airSolutions[0].journey[0]
-              .airSegments[1].destination,
-            departuredate:
-              bookingDetails.flight_data.airSolutions[0].journey[0]
-                .airSegments[0].departDatetime,
-            arrivaldate:
-              bookingDetails.flight_data.airSolutions[0].journey[0]
-                .airSegments[1].arrivalDatetime,
-            location: "TEST",
-            total: bookingDetails.amount,
-          })
+      const mainPaxName = await FlightBookingService.mainPaxDetails(
+        bookingDetails._id
+      );
+      const pnrReqParams = {
+        AccountInfo: {
+          CompanyCode: process.env.HOLIDAY_AIR_COMPANY_CODE,
+          WebsiteName: process.env.HOLIDAY_AIR_WEBSITE_NAME,
+        },
+        BookingRef: bookingDetails.brightsun_reference,
+        ApplicationAccessMode: process.env.HOLIDAY_AIR_APPLICATION_ACCESS_MODE,
+      };
+      const flightDetailsResponse = await makeAPIRequest(
+        "POST",
+        "/Getpnr",
+        pnrReqParams
+      );
+
+      // console.log(flightDetailsResponse.result.airSolutions);
+      const destinationLength =
+        flightDetailsResponse.result.airSolutions[0]?.journey[0].airSegments
+          .length;
+
+      // console.log("length", destinationLength);
+
+      const dateParts =
+        flightDetailsResponse.result.airSolutions[0].journey[0].airSegments[0].departDate.split(
+          " "
         );
 
-        const penAir = await paymentConfirmationRequest({
-          PNR: bookingDetails.flight_data.pnrInfo[0].brightsunReference,
-          OrderNumber: bookingDetails.penair_order_id,
-          BookingId: req.params.bookingId,
-          Amount: bookingDetails.amount,
-        });
+      const day = dateParts[1];
+      const month = dateParts[2];
+      const year = dateParts[3];
 
-        // const eTicketReqParams = {
+      // Create a Date object using the parsed parts
+      const date = new Date(`${month} ${day}, ${year}`);
 
-        // }
+      // Format the date to 'Saturday, December 21, 2024'
+      // return
 
-        // const getETicketDetails = await makeAPIRequest("POST", "/Eticket", eTicketReqParams)
+      console.log(
+        flightDetailsResponse.result.airSolutions[0].journey[0].airSegments[1]
+          .airport[0]
+      );
 
-        const finalResponse = {
-          bookingDetails: bookingDetails,
-          bookingConfirmationDetails: flightDetailsResponse,
-        };
-        res.status(200).json({ data: finalResponse });
-      } else if (req.params.bookingId.startsWith("H")) {
-        const bookingDetails = await HotelBookingService.updateBookingStatus(
-          req.params.bookingId,
-          req.body
-        );
-        const bookingDetailsResponse = await makeHotelApiRequest(
-          "GET",
-          `hotel-api/3.0/bookings/${bookingDetails.reference}`,
-          "",
-          ""
-        );
-        const finalResponse = {
-          bookingDetails: bookingDetails,
-          bookingConfirmationDetails: bookingDetailsResponse,
-        };
-        res.status(200).json({ data: finalResponse });
-      } else {
-        console.log(`${str2} starts with neither 'F' nor 'H'`);
-        // Default condition if neither 'F' nor 'H'
-      }
+      await sendMail(
+        bookingDetails.email,
+        "Booking confirmation",
+        holidayairBookingConfirm({
+          titel: "Flight",
+          booking_id: bookingDetails.booking_id,
+          status: true,
+          from: bookingDetails.flight_data.airSolutions[0].journey[0]
+            .airSegments[0].origin,
+          to: bookingDetails.flight_data.airSolutions[0].journey[0]
+            .airSegments[1].destination,
+          departuredate:
+            bookingDetails.flight_data.airSolutions[0].journey[0].airSegments[0]
+              .departDatetime,
+          arrivaldate:
+            bookingDetails.flight_data.airSolutions[0].journey[0].airSegments[1]
+              .arrivalDatetime,
+          location: "TEST",
+          total: bookingDetails.amount,
+          paxName: mainPaxName,
+          destination:
+            flightDetailsResponse.result.airSolutions[0].journey[0].airSegments[
+              destinationLength - 1
+            ].destinationAirportName +
+            " - " +
+            flightDetailsResponse.result.airSolutions[0].journey[0].airSegments[
+              destinationLength - 1
+            ].destinationAirportCity +
+            " - " +
+            flightDetailsResponse.result.airSolutions[0].journey[0].airSegments[
+              destinationLength - 1
+            ].destinationAirportCountry,
+          departureDate: date.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          airline1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].airlineName,
+          flightNumber1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].flightNumber,
+          status1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].status,
+          originAirport1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].originAirportName +
+            " (" +
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].origin +
+            ") -" +
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].originAirportCity,
+          depTerminal1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].airport[0].originTerminal,
+          departTime1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].departTime,
+          arrivalTime1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].arrivalTime,
+          class1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].class,
+          arrivalDateTime1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[0].arrivalDatetime,
+          arrivalCity1:
+            flightDetailsResponse.result.airSolutions[0].journey[0]
+              .airSegments[1].airport[0].airportName +
+            " " +
+            bookingDetails.flight_data.airSolutions[0].journey[0].airSegments[1]
+              .airport[0].city.cityName +
+            " " +
+            bookingDetails.flight_data.airSolutions[0].journey[0].airSegments[1]
+              .airport[0].country.countryName,
+        })
+      );
 
-      res.status(200).json({ data: bookingDetails });
-    } catch (error) {
-      res.status(500).json({ error: error });
+      await paymentConfirmationRequest({
+        PNR: bookingDetails.flight_data.pnrInfo[0].brightsunReference,
+        OrderNumber: bookingDetails.penair_order_id,
+        BookingId: req.params.bookingId,
+        Amount: bookingDetails.amount,
+        TransactionId: bookingDetails.transaction_id,
+        TaxId: bookingDetails.tax_id,
+      });
+
+      // const eTicketReqParams = {
+
+      // }
+
+      // const getETicketDetails = await makeAPIRequest("POST", "/Eticket", eTicketReqParams)
+
+      const finalResponse = {
+        bookingDetails: bookingDetails,
+        bookingConfirmationDetails: flightDetailsResponse,
+      };
+      res.status(200).json({ data: finalResponse });
+    } else if (req.params.bookingId.startsWith("H")) {
+      const bookingDetails = await HotelBookingService.updateBookingStatus(
+        req.params.bookingId,
+        req.body
+      );
+      const bookingDetailsResponse = await makeHotelApiRequest(
+        "GET",
+        `hotel-api/3.0/bookings/${bookingDetails.reference}`,
+        "",
+        ""
+      );
+      const finalResponse = {
+        bookingDetails: bookingDetails,
+        bookingConfirmationDetails: bookingDetailsResponse,
+      };
+      res.status(200).json({ data: finalResponse });
+    } else {
+      console.log(`${str2} starts with neither 'F' nor 'H'`);
+      // Default condition if neither 'F' nor 'H'
     }
+
+    // res.status(200).json({ data: bookingDetails });
+    // } catch (error) {
+    //   res.status(500).json({ error: error });
+    // }
   }
 
   async updatePaymentStatus(req, res) {

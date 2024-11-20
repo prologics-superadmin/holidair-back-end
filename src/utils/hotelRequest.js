@@ -24,7 +24,7 @@ async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
       params: body,
       data: reqBody, // Add query parameters
     };
-    // console.log(options);
+    console.log(options);
     const response = await axios(options);
     // console.log(response);
     return response.data;
