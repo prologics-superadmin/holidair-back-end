@@ -69,12 +69,12 @@ class FlightBookingController {
       req.body.Pax
     );
 
-    const result = await this.saveFlightBookingDetails(
-      bookingDetails,
-      req,
-      userId
-    );
-    return res.status(200).json({ data: result });
+    // const result = await this.saveFlightBookingDetails(
+    //   bookingDetails,
+    //   req,
+    //   userId
+    // );
+    // return res.status(200).json({ data: result });
     const bookingResponse = await makeAPIRequest(
       "POST",
       "/flightpnr",
@@ -248,23 +248,25 @@ class FlightBookingController {
   async getSelectedFlightPriceSearch(req, res) {
     // try {
     const response = await makeAPIRequest("post", "/flightprice", req.body);
-    console.log(response.result);
-    const totalPrice1 = response.result.airSolutions[0].totalPrice;
-    const totalPrice2 = response.result.airSolutions[1]
-      ? response.result.airSolutions[1].totalPrice
-      : 0;
+    // console.log(response.result);
+    // const totalPrice1 = response.result.airSolutions[0].totalPrice;
+    // const totalPrice2 = response.result.airSolutions[1]
+    // ? response.result.airSolutions[1].totalPrice
+    // : 0;
 
     const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
 
     // Calculate the new total with commission
     const totalWithCommission1 = flightMarkupPrice
-      ? flightMarkupPrice.amount ?? 0
+      ? flightMarkupPrice.amount + response.result.airSolutions[0].totalPrice ??
+        0
       : 0;
     const totalWithCommission2 = flightMarkupPrice
       ? flightMarkupPrice.amount ?? 0
       : 0;
 
     // Add the new property to the air solution object
+
     response.result.airSolutions[0].totalWithCommission = totalWithCommission1;
     response.result.airSolutions[0].markupValue = flightMarkupPrice
       ? flightMarkupPrice.amount ?? 0
