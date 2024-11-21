@@ -221,6 +221,31 @@ class FlightBookingController {
         orderNumber
       );
 
+      const dateObj1 = new Date(requestData.departureDate);
+      const dateObj2 = new Date(requestData.returnDate);
+
+      // Format the date to YYYY-MM-DD
+      const formattedDate1 = dateObj1.toISOString().split("T")[0];
+      const formattedDate2 = dateObj2.toISOString().split("T")[0];
+
+      await sendMail(
+        process.env.BOOKING_REQUEST_EMAIL,
+        "Booking request",
+        holidayairBookingDetails({
+          titel: "Flight",
+          booking_id: bookingDetails.booking_id,
+          penair_id: orderNumber,
+          passenger_name:
+            req.body.Pax[0].FirstName + " " + req.body.Pax[0].LastName,
+          contact_number: requestData.ContactNo,
+          email: requestData.Email,
+          from: req.body.from,
+          to: req.body.to,
+          departuredate: formattedDate1,
+          arrivaldate: formattedDate2,
+        })
+      );
+
       // res.status(200).json({ data: penAirResponse });
       const finalResponse = {
         status: "OK",
@@ -486,53 +511,53 @@ class FlightBookingController {
       const formattedDate1 = dateObj1.toISOString().split("T")[0];
       const formattedDate2 = dateObj2.toISOString().split("T")[0];
 
-      const penAir = await penAirApiRequest({
-        TravelDate: "",
-        FirstName: req.body.Pax[0].FirstName,
-        LastName: req.body.Pax[0].LastName,
-        Title: req.body.Pax[0].Title,
-        Type: "",
-        EMail: requestData.Email,
-        TelePhone: requestData.ContactNo,
-        PassengerName: req.body.Pax[0].FirstName,
+      // const penAir = await penAirApiRequest({
+      //   TravelDate: "",
+      //   FirstName: req.body.Pax[0].FirstName,
+      //   LastName: req.body.Pax[0].LastName,
+      //   Title: req.body.Pax[0].Title,
+      //   Type: "",
+      //   EMail: requestData.Email,
+      //   TelePhone: requestData.ContactNo,
+      //   PassengerName: req.body.Pax[0].FirstName,
 
-        TicketNumber: req.body.TicketNumber,
-        AirlineId: req.body.AirlineId,
-        VLocator: "",
-        TicketDate: "",
-        IATANumber: "",
-        Currency: "GBP",
-        FareSellAmt:
-          parseFloat(bookingDetails.amount) -
-          parseFloat(bookingDetails.markup_amount),
-        FareCommAmt: bookingDetails.markup_amount,
-        TotalSellAmt: bookingDetails.amount,
-        ValidatingAirlineId: "",
-        TicketType: "",
-        Issuer: "Brightsun",
-        TaxType: "",
-        TaxDescription: "",
-        TaxSellAmt: "",
-        VirtualCardNo: "",
-        FlightNumber: "",
-        ClassType: "",
-        Status: "",
-        DepartureDate: formattedDate1,
-        ArrivalDate: formattedDate2,
-        DepartureCityId: "",
-        ArrivalCityId: "",
-        DepartureTime: "10:00:00",
-        ArrivalTime: "15:00:00",
-        FareBasis: "",
-        DepartureTerminal: "",
-        ArrivalTerminal: "",
-        FlightTime: "",
-        Stops: 0,
-        PCC: "4CHC",
-        BookingId: bookingDetails.booking_id,
-        Provider: "Brightsun",
-        PNR: bookingDetails.booking_id,
-      });
+      //   TicketNumber: req.body.TicketNumber,
+      //   AirlineId: req.body.AirlineId,
+      //   VLocator: "",
+      //   TicketDate: "",
+      //   IATANumber: "",
+      //   Currency: "GBP",
+      //   FareSellAmt:
+      //     parseFloat(bookingDetails.amount) -
+      //     parseFloat(bookingDetails.markup_amount),
+      //   FareCommAmt: bookingDetails.markup_amount,
+      //   TotalSellAmt: bookingDetails.amount,
+      //   ValidatingAirlineId: "",
+      //   TicketType: "",
+      //   Issuer: "Brightsun",
+      //   TaxType: "",
+      //   TaxDescription: "",
+      //   TaxSellAmt: "",
+      //   VirtualCardNo: "",
+      //   FlightNumber: "",
+      //   ClassType: "",
+      //   Status: "",
+      //   DepartureDate: formattedDate1,
+      //   ArrivalDate: formattedDate2,
+      //   DepartureCityId: "",
+      //   ArrivalCityId: "",
+      //   DepartureTime: "10:00:00",
+      //   ArrivalTime: "15:00:00",
+      //   FareBasis: "",
+      //   DepartureTerminal: "",
+      //   ArrivalTerminal: "",
+      //   FlightTime: "",
+      //   Stops: 0,
+      //   PCC: "4CHC",
+      //   BookingId: bookingDetails.booking_id,
+      //   Provider: "Brightsun",
+      //   PNR: bookingDetails.booking_id,
+      // });
 
       const orderNumber = await penAirBookingId(penAir);
       await FlightBookingService.updatePenAirOderId(
@@ -557,7 +582,7 @@ class FlightBookingController {
           arrivaldate: formattedDate2,
         })
       );
-      return "success";
+      // return "success";
     } catch (error) {
       throw error;
     }
