@@ -24,7 +24,7 @@ class FlightOfferService {
       return await FlightOffer.findById(id)
         .populate({
           path: "destination_id",
-          select: "name _id", // Select only name field of the brand object
+          select: "name _id image_url", // Select only name field of the brand object
         })
         .populate({
           path: "to_location",
