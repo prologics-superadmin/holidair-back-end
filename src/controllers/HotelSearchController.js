@@ -13,6 +13,8 @@ class HotelSearchController {
         ""
       );
 
+      console.log("hotelReq1", response);
+
       const hotelIds = response.hotels.map((hotel) => parseInt(hotel.code));
 
       const {
@@ -49,6 +51,8 @@ class HotelSearchController {
         "",
         requestBody
       );
+
+      console.log("hotelReq1", response);
 
       // return res.status(200).json({ data: hotelResponse });
 
@@ -88,7 +92,7 @@ class HotelSearchController {
           minPrice: parseFloat(highest),
           maxPrice: parseFloat(lowest),
         },
-        hotelMarkupPrice: hotelMarkupPrice.price ?? 0,
+        hotelMarkupPrice: 0,
       });
     } catch (error) {
       res.status(500).json({ error: error });
