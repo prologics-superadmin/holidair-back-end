@@ -30,6 +30,15 @@ class MarkupController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  async getSelectedMarkup(req, res) {
+    try {
+      const response = await MarkupService.getMarkupById(req.params.id);
+      res.status(200).json({ message: "", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
 
 module.exports = new MarkupController();

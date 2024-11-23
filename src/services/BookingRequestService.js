@@ -19,7 +19,10 @@ class BookingRequestService {
 
     const query = { is_deleted: false, ...filters };
 
-    const result = await BookingRequest.find(query);
+    const result = await BookingRequest.find(query).populate({
+      path: "plan_id",
+      select: "package_name _id",
+    });
     const count = await BookingRequest.countDocuments(query);
 
     let response = {};
@@ -41,9 +44,14 @@ class BookingRequestService {
           contact_no: data.contact_number, // Using 'contact_number' from the BookingRequest schema
           email: data.email, // Adding the email for clarity
           country: data.country, // Country field from the schema
-          check_in_date: data.check_in_date, // Check-in date field
-          check_out_date: data.check_out_date, // Check-out date field
-          plan_id: data.plan_id || null, // Including plan ID, if available
+          check_in_date: new Date(data.check_in_date)
+            .toISOString()
+            .split("T")[0], // Format check-in date to YYYY-MM-DD
+          check_out_date: new Date(data.check_out_date)
+            .toISOString()
+            .split("T")[0], // Format check-out date to YYYY-MM-DD
+          plan_id: data.plan_id?._id || null, // Including plan ID, if available
+          plan_name: data.plan_id?.package_name || null, // Including plan name, if available
         })),
         dataCount: count, // Total count of data
         dataPerPage: itemsPerPage, // Number of items per page
