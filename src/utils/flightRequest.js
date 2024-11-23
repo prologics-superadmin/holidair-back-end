@@ -31,6 +31,7 @@ async function makeAPIRequest(method, endpoint, body) {
     };
 
     const response = await axios(options);
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Error:", error);
