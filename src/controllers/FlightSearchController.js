@@ -70,6 +70,7 @@ class FlightSearchController {
       "get",
       `/AutoComplete/${req.params.text}`
     );
+    console.log(response);
     response.forEach((item) => {
       const match = item.AIRPORT.match(/^(.*)\[(.*)\](.*)$/);
       const nameValue = item.AIRPORT;
