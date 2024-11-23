@@ -214,7 +214,7 @@ class FlightOfferService {
       is_deleted: false,
       flight_offer: true,
       end_date: { $gt: currentDate },
-      reign: type,
+      reign: "",
     };
     const result = await FlightOffer.find(query)
       .populate({
