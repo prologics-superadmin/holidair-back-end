@@ -62,7 +62,18 @@ class DestinationService {
         };
       } else {
         response = {
-          data: result,
+          data: result.map((destination) => ({
+            _id: destination._id,
+            name: destination.name,
+            description: destination.description
+              ? destination.description.split(" ").slice(0, 100).join(" ") +
+                "..."
+              : "",
+            image_url: destination.image_url,
+            is_deleted: destination.is_deleted,
+            createdAt: destination.createdAt,
+            updatedAt: destination.updatedAt,
+          })),
           dataCount: count,
           dataPerPage: itemsPerPage,
           currentPaginationIndex: 1, // Assuming this should be 1 for the first page
