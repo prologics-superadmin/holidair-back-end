@@ -66,7 +66,7 @@ class DestinationService {
             _id: destination._id,
             name: destination.name,
             description: destination.description
-              ? destination.description.split(" ").slice(0, 100).join(" ") +
+              ? destination.description.split(" ").slice(0, 10).join(" ") +
                 "..."
               : "",
             image_url: destination.image_url,
