@@ -132,7 +132,7 @@ class PackageService {
         rating: data.star_rating.length - 1,
         price: formatCurrency(data.price),
         days: data.duration,
-        location: data.city_id.name,
+        location: data.city,
       }));
       return response;
     } catch (error) {
@@ -154,7 +154,7 @@ class PackageService {
         rating: data.star_rating.length - 1,
         price: formatCurrency(data.price),
         days: data.duration,
-        location: data.city_id.name,
+        location: data.city,
       }));
       return response;
     } catch (error) {
@@ -175,7 +175,7 @@ class PackageService {
         rating: data.star_rating.length - 1,
         price: formatCurrency(data.price),
         days: data.duration,
-        location: data.city_id.name,
+        location: data.city,
       }));
       return response;
     } catch (error) {
@@ -196,7 +196,7 @@ class PackageService {
         rating: data.star_rating.length - 1,
         price: formatCurrency(data.price),
         days: data.duration,
-        location: data.city_id.name,
+        location: data.city,
       }));
       return response;
     } catch (error) {

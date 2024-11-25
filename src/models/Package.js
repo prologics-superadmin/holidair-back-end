@@ -113,6 +113,9 @@ const PackageSchema = new mongoose.Schema(
       type: Boolean,
       default: 0,
     },
+    city: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

@@ -26,7 +26,6 @@ class BookingRequestController {
 
   async markupList(req, res) {
     try {
-      // console.log("ss");
       const response = await MarkupService.list(req.body);
       res.status(200).json({ message: "", data: response });
     } catch (_) {
