@@ -19,12 +19,7 @@ function getLastDepartureDate(journey) {
 async function sendErrorNotificationEmail(subject, message, error, errorType) {
   try {
     await sendMail(
-      [
-        "nayanadarshana1@gmail.com",
-        "nayana@prologics.lk",
-        "sujith@holidayair.com",
-        "harsha@prologics.lk",
-      ],
+      ["nayana@prologics.lk", "sujith@holidayair.com", "harsha@prologics.lk"],
       "",
       "API Error ALERT",
       errorNotificationMail({
