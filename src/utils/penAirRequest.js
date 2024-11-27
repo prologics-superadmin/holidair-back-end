@@ -150,7 +150,7 @@ async function penAirApiRequest(data) {
 
     const response = await axios({
       method: "POST",
-      url: "https://penairdemo17.pensupport.co.uk/PenAIR/Penairdemo17/WebServices/FolderOrder2Cash/FolderOrder2Cash.asmx",
+      url: process.env.PEN_AIR_URL,
       headers: {
         "Content-Type": "text/xml",
         SOAPAction: "http://www.penguininc.com/FolderCreateClient",
