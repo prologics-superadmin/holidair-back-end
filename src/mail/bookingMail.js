@@ -5,8 +5,8 @@ const transporter = nodemailer.createTransport({
   port: 587, // Using TLS on port 587
   secure: false, // Use `false` for TLS
   auth: {
-    user: "apikey",
-    pass: "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",
+    user: process.env.SENDGRID_USER_NAME,
+    pass: process.env.SENDGRID_PASSWORD, // Replace with your actual SendGrid API Key
   },
   tls: {
     rejectUnauthorized: false, // Optional, allows self-signed certificates if needed
