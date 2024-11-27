@@ -1,4 +1,3 @@
-
 async function getHighestAndLowestPrices(arr) {
   if (!Array.isArray(arr) || arr.length === 0) {
     return { highest: null, lowest: null };
@@ -103,9 +102,41 @@ async function getAirportCodes(data) {
   return { origin, finalDestination };
 }
 
+async function getAdultPaxAmountRange(activities) {
+  let highestAmount = -Infinity; // Set initial highest to a very low value
+  let lowestAmount = Infinity; // Set initial lowest to a very high value
+
+  activities.forEach((activity) => {
+    // Check for `amountsFrom` array in the activity object
+    if (activity.amountsFrom) {
+      activity.amountsFrom.forEach((amountObj) => {
+        // Filter for 'ADULT' pax type
+        if (amountObj.paxType === "ADULT") {
+          // Update highest and lowest amounts
+          if (amountObj.amount > highestAmount) {
+            highestAmount = amountObj.amount;
+          }
+          if (amountObj.amount < lowestAmount) {
+            lowestAmount = amountObj.amount;
+          }
+        }
+      });
+    }
+  });
+
+  // Return the result as an object
+  return {
+    highestAmount: highestAmount === -Infinity ? null : highestAmount,
+    lowestAmount: lowestAmount === Infinity ? null : lowestAmount,
+  };
+}
+
+// Example usage
+
 exports.getHighestAndLowestPrices = getHighestAndLowestPrices;
 exports.getStopValues = getStopValues;
 exports.getUniqueTotalFlightDurations = getUniqueTotalFlightDurations;
 exports.getUniqueBaggageAllowances = getUniqueBaggageAllowances;
 exports.getUniqueAirports = getUniqueAirports;
 exports.getAirportCodes = getAirportCodes;
+exports.getAdultPaxAmountRange = getAdultPaxAmountRange;

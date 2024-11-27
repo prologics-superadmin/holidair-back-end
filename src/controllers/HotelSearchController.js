@@ -1,3 +1,4 @@
+const sendErrorNotificationEmail = require("../helpers/genaralHelper");
 const { getHighestAndLowestPrices } = require("../helpers/hotelSearchHelper");
 const MarkupPriceService = require("../services/MarkupPriceService");
 const { getPrice } = require("../services/MarkupPriceService");
@@ -12,8 +13,6 @@ class HotelSearchController {
         req.body,
         ""
       );
-
-      console.log("hotelReq1", response);
 
       const hotelIds = response.hotels.map((hotel) => parseInt(hotel.code));
 
@@ -51,8 +50,6 @@ class HotelSearchController {
         "",
         requestBody
       );
-
-      console.log("hotelReq1", response);
 
       // return res.status(200).json({ data: hotelResponse });
 
@@ -95,6 +92,13 @@ class HotelSearchController {
         hotelMarkupPrice: 0,
       });
     } catch (error) {
+      await sendErrorNotificationEmail(
+        "",
+
+        error,
+        "",
+        "Hotel search API Error"
+      );
       res.status(500).json({ error: error });
     }
   }
@@ -136,6 +140,13 @@ class HotelSearchController {
 
       res.status(200).json({ data: finalResponse });
     } catch (error) {
+      await sendErrorNotificationEmail(
+        "",
+
+        error,
+        error.response.data,
+        "Hotel get API Error"
+      );
       res.status(500).json({ error: error });
     }
   }

@@ -1,3 +1,4 @@
+const sendErrorNotificationEmail = require("../helpers/genaralHelper");
 const holidayairBookingConfirm = require("../mail/holidayair-booking-confirm");
 const holidayairBookingFailed = require("../mail/holidayair-booking-failed");
 const sendMail = require("../mail/mail");
@@ -66,6 +67,13 @@ class HotelBookingController {
         res.status(500).json({ data: hotelBookingResponse });
       }
     } catch (error) {
+      await sendErrorNotificationEmail(
+        "",
+
+        error,
+        "",
+        "Hotel booking API Error"
+      );
       res.status(500).json({ error: error });
     }
   }

@@ -1,3 +1,6 @@
+const errorNotificationMail = require("../mail/error-notification");
+const sendMail = require("../mail/mail");
+
 function getLastDepartureDate(journey) {
   try {
     if (journey.length === 0) return "";
@@ -13,4 +16,29 @@ function getLastDepartureDate(journey) {
   }
 }
 
+async function sendErrorNotificationEmail(subject, message, error, errorType) {
+  try {
+    await sendMail(
+      [
+        "nayanadarshana1@gmail.com",
+        "nayana@prologics.lk",
+        "sujith@holidayair.com",
+        "harsha@prologics.lk",
+      ],
+      "",
+      "API Error ALERT",
+      errorNotificationMail({
+        errorType: errorType,
+        message: message,
+        stack: error,
+        timestamp: new Date().toISOString(),
+      })
+    );
+  } catch (error) {
+    console.log(error);
+    return "";
+  }
+}
+
 module.exports = getLastDepartureDate;
+module.exports = sendErrorNotificationEmail;

@@ -12,6 +12,7 @@ const makeAPIRequest = require("../utils/flightRequest");
 const { getPrice } = require("../services/MarkupPriceService");
 const MarkupPriceService = require("../services/MarkupPriceService");
 const MarkupService = require("../services/MarkupService");
+const sendErrorNotificationEmail = require("../helpers/genaralHelper");
 
 class FlightSearchController {
   async searchFlights(req, res) {
@@ -56,34 +57,54 @@ class FlightSearchController {
         };
         res.status(200).json({ data: responseData });
       } else {
+        await sendErrorNotificationEmail(
+          "",
+          "admin@holidayair.com",
+          "error",
+          "",
+          "Brightsun Flight search API Error"
+        );
         res.status(500).json({ error: "API ERROR" });
       }
     } catch (error) {
+      await sendErrorNotificationEmail(
+        "",
+
+        error,
+        "",
+        "Brightsun Flight search API Error"
+      );
       res.status(500).json({ error: error });
     }
   }
 
   async airportSearch(req, res) {
-    // try {
-    const airportDetails = [];
-    const response = await makeAPIRequest(
-      "get",
-      `/AutoComplete/${req.params.text}`
-    );
-    console.log(response);
-    response.forEach((item) => {
-      const match = item.AIRPORT.match(/^(.*)\[(.*)\](.*)$/);
-      const nameValue = item.AIRPORT;
-      if (match) {
-        const name = nameValue;
-        const code = match[2];
-        airportDetails.push({ name, code });
-      }
-    });
-    res.status(200).json({ data: airportDetails });
-    // } catch (_) {
-    //   res.status(500).json({ error: "Internal server error " });
-    // }
+    try {
+      const airportDetails = [];
+      const response = await makeAPIRequest(
+        "get",
+        `/AutoComplete/${req.params.text}`
+      );
+      response.forEach((item) => {
+        const match = item.AIRPORT.match(/^(.*)\[(.*)\](.*)$/);
+        const nameValue = item.AIRPORT;
+        if (match) {
+          const name = nameValue;
+          const code = match[2];
+          airportDetails.push({ name, code });
+        }
+      });
+      res.status(200).json({ data: airportDetails });
+    } catch (error) {
+      await sendErrorNotificationEmail(
+        "",
+
+        error,
+        "",
+        "Brightsun Airport list API Error"
+      );
+      res.status(500).json({ error: "Internal server error " });
+    }
   }
 
   async getFareRules(req, res) {

@@ -26,7 +26,6 @@ async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
     };
     console.log(options);
     const response = await axios(options);
-    // console.log(response);
     return response.data;
   } catch (error) {
     console.log(error);

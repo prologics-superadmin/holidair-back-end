@@ -57,6 +57,26 @@ class BookingRequestController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  async callMeRequest(req, res) {
+    try {
+      const response = await BookingRequestService.contactMeCreate(req.body);
+      res
+        .status(201)
+        .json({ message: "New Call me request created", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async callMeList(req, res) {
+    try {
+      const response = await BookingRequestService.callMeList(req.body);
+      res.status(200).json({ message: "", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
 
 module.exports = new BookingRequestController();
