@@ -5,7 +5,7 @@ const transporter = nodemailer.createTransport({
   port: 587, // Using TLS on port 587
   secure: false, // Use `false` for TLS
   auth: {
-    user: process.env.SENDGRID_USER_NAME, // SendGrid requires "apikey" as the username
+    user: process.env.SENDGRID_USER_NAME,
     pass: process.env.SENDGRID_PASSWORD, // Replace with your actual SendGrid API Key
   },
   tls: {
@@ -31,5 +31,4 @@ async function sendBookingMail(
     throw "Mail sending failed";
   }
 }
-
 module.exports = sendBookingMail;
