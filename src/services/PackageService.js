@@ -74,7 +74,7 @@ class PackageService {
           data: result.map((pack) => ({
             _id: pack._id,
             package_name: pack.package_name,
-            city_name: pack.city_id?.name,
+            city_name: pack.city ?? "",
             currency: pack.currency,
             price: formatCurrency(pack.price),
             duration: parseInt(pack.duration),
