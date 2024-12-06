@@ -25,6 +25,7 @@ const adminBookingRoutes = require("./src/routes/bookingRoutes");
 const markupPriceRoutes = require("./src/routes/markupPriceRoutes");
 const markupRoutes = require("./src/routes/markupRoutes");
 const bookingRequestRoutes = require("./src/routes/bookingRequestRoutes");
+const apiRequestsRoutes = require("./src/routes/apiRequestRoutes");
 module.exports = (app) => {
   // User routes
   app.use("/api/users", userRoutes);
@@ -48,4 +49,5 @@ module.exports = (app) => {
   app.use("/api/markup-price", markupPriceRoutes);
   app.use("/api/markup", markupRoutes);
   app.use("/api/booking-request", bookingRequestRoutes);
+  app.use("/api/api-request", apiRequestsRoutes);
 };

@@ -1,7 +1,20 @@
 const axios = require("axios");
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 
 const baseURL = process.env.HOTEL_URL;
+
+// Define log file paths in the logs folder
+const logsFolder = path.join(__dirname, "../logs");
+const requestLogPath = path.join(logsFolder, "request.json");
+const responseLogPath = path.join(logsFolder, "response.json");
+const errorLogPath = path.join(logsFolder, "error.json");
+
+// Ensure logs folder exists
+if (!fs.existsSync(logsFolder)) {
+  fs.mkdirSync(logsFolder, { recursive: true });
+}
 
 async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
   try {
@@ -24,11 +37,17 @@ async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
       params: body,
       data: reqBody, // Add query parameters
     };
-    console.log(options);
+
+    // Log the request to the request.json file
+
     const response = await axios(options);
+
+    // Log the response to the response.json file
+
     return response.data;
   } catch (error) {
-    console.log(error);
+    // Log the error to the error.json file
+
     throw error;
   }
 }

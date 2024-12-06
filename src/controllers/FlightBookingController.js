@@ -18,6 +18,8 @@ const penAirBookingId = require("../helpers/penAirBookingId");
 const holidayairBookingDetails = require("../mail/holidayair-booking-details");
 const sendErrorNotificationEmail = require("../helpers/genaralHelper");
 const sendBookingMail = require("../mail/bookingMail");
+const getClientIp = require("../helpers/genaralHelper");
+const ApiRequestLogService = require("../services/ApiRequestLogService");
 
 class FlightBookingController {
   constructor() {
@@ -26,269 +28,299 @@ class FlightBookingController {
   }
 
   async bookFlight(req, res) {
-    try {
-      let decoded;
-      let userId = "";
-      const authToken = req.headers["x-access-token"];
-      if (authToken) {
-        if (
-          authToken.split(" ")[1] !== undefined ||
-          authToken.split(" ")[1] !== null ||
-          authToken.split(" ")[1] !== ""
-        ) {
-          decoded = jwt.verify(
-            authToken.split(" ")[1],
-            process.env.JWT_SECRET_KEY
-          );
-          userId = decoded.userId;
-        }
+    const ip = await getClientIp(req);
+    // try {
+    // const ip = await getClientIp(req);
+    let decoded;
+    let userId = "";
+    const authToken = req.headers["x-access-token"];
+    if (authToken) {
+      if (
+        authToken.split(" ")[1] !== undefined ||
+        authToken.split(" ")[1] !== null ||
+        authToken.split(" ")[1] !== ""
+      ) {
+        decoded = jwt.verify(
+          authToken.split(" ")[1],
+          process.env.JWT_SECRET_KEY
+        );
+        userId = decoded.userId;
+      }
+    } else {
+      const user = await User.findOne({
+        email: req.body.formData.Email,
+        is_deleted: false,
+      });
+      if (user) {
+        userId = user._id;
       } else {
-        const user = await User.findOne({
-          email: req.body.Email,
-          is_deleted: false,
+        // console.log(req.body.Pax);
+        const user = await User.create({
+          first_name: req.body.formData.Pax[0].FirstName,
+          last_name: req.body.formData.Pax[0].LastName,
+          email: req.body.formData.Email,
+          user_name: req.body.formData.Email.split("@")[0],
         });
-        if (user) {
-          userId = user._id;
-        } else {
-          // console.log(req.body.Pax);
-          const user = await User.create({
-            first_name: req.body.Pax[0].FirstName,
-            last_name: req.body.Pax[0].LastName,
-            email: req.body.Email,
-            user_name: req.body.Email.split("@")[0],
-          });
-          userId = user._id;
-        }
+        userId = user._id;
+      }
+    }
+
+    const bookingDetails = await FlightBookingService.create(
+      req.body.formData,
+      userId
+    );
+    await FlightBookingService.createFlightCustomerAddress(
+      bookingDetails._id,
+      req.body.formData.AddressInfo
+    );
+    await FlightBookingService.createPaxDetail(
+      bookingDetails._id,
+      req.body.formData.Pax
+    );
+
+    // const result = await this.saveFlightBookingDetails(
+    //   bookingDetails,
+    //   req,
+    //   userId
+    // );
+    // return res.status(200).json({ data: result });
+    const bookingResponse = await makeAPIRequest(
+      "POST",
+      "/flightpnr",
+      req.body.params
+    );
+
+    const response = await FlightBookingService.getById(bookingDetails._id);
+
+    const requestData = req.body.formData;
+
+    let ArrivalDate = "";
+
+    let departDate = "";
+
+    let departTime = "";
+    let ticketDate = "";
+
+    if (
+      bookingResponse &&
+      bookingResponse.result &&
+      bookingResponse.result.status === "OK"
+    ) {
+      await FlightBookingService.updateBookingConfirmationDetails(
+        bookingDetails._id,
+        bookingResponse.result.pnrInfo[0],
+        bookingResponse.result
+      );
+
+      await ApiRequestLogService.create({
+        request: req.body.formData,
+        response: response,
+        browserData: req.body.browserData,
+        ip: ip,
+        success_status: true,
+        endpoint: "flight booking",
+      });
+
+      let selectedObject;
+
+      const data =
+        bookingResponse.result.airSolutions[0].journey[0].airSegments;
+
+      if (data.length % 2 === 0) {
+        // If the length is even, get the middle object
+        selectedObject = data[data.length / 2 - 1];
+      } else {
+        // If the length is odd, get the middle object
+        selectedObject = data[Math.floor(data.length / 2)];
       }
 
-      const bookingDetails = await FlightBookingService.create(
-        req.body,
-        userId
-      );
-      await FlightBookingService.createFlightCustomerAddress(
-        bookingDetails._id,
-        req.body.AddressInfo
-      );
-      await FlightBookingService.createPaxDetail(
-        bookingDetails._id,
-        req.body.Pax
-      );
-
-      // const result = await this.saveFlightBookingDetails(
-      //   bookingDetails,
-      //   req,
-      //   userId
+      // await sendMail(
+      //   response.email,
+      //   "Booking confirmation",
+      //   holidayairBookingConfirm({
+      //     titel: "Flight",
+      //     booking_id: bookingDetails.booking_id,
+      //     status: true,
+      //     from: data[0].origin,
+      //     to: selectedObject.origin,
+      //     departuredate: data[0].departDate,
+      //     arrivaldate: selectedObject.arrivalDate,
+      //     location: data[0].airlineName,
+      //     total: bookingDetails.amount,
+      //   })
       // );
-      // return res.status(200).json({ data: result });
-      const bookingResponse = await makeAPIRequest(
-        "POST",
-        "/flightpnr",
-        req.body
-      );
 
-      const response = await FlightBookingService.getById(bookingDetails._id);
-
-      const requestData = req.body;
-
-      let ArrivalDate = "";
-
-      let departDate = "";
-
-      let departTime = "";
-      let ticketDate = "";
+      // const penAirResponse = await penAirApiRequest();
 
       if (
-        bookingResponse &&
-        bookingResponse.result &&
-        bookingResponse.result.status === "OK"
+        bookingResponse.result != null ||
+        bookingResponse.result != undefined
       ) {
-        await FlightBookingService.updateBookingConfirmationDetails(
-          bookingDetails._id,
-          bookingResponse.result.pnrInfo[0],
-          bookingResponse.result
+        ArrivalDate = await getLastDepartureDate(
+          bookingResponse.result.airSolutions[0].journey[0].airSegments
         );
 
-        let selectedObject;
+        departDate =
+          bookingResponse.result.airSolutions[0].journey[0].airSegments[0].departDatetime.split(
+            " "
+          )[0];
+        departTime =
+          bookingResponse.result.airSolutions[0].journey[0].airSegments[0].departDatetime.split(
+            " "
+          )[1];
 
-        const data =
-          bookingResponse.result.airSolutions[0].journey[0].airSegments;
-
-        if (data.length % 2 === 0) {
-          // If the length is even, get the middle object
-          selectedObject = data[data.length / 2 - 1];
-        } else {
-          // If the length is odd, get the middle object
-          selectedObject = data[Math.floor(data.length / 2)];
-        }
-
-        // await sendMail(
-        //   response.email,
-        //   "Booking confirmation",
-        //   holidayairBookingConfirm({
-        //     titel: "Flight",
-        //     booking_id: bookingDetails.booking_id,
-        //     status: true,
-        //     from: data[0].origin,
-        //     to: selectedObject.origin,
-        //     departuredate: data[0].departDate,
-        //     arrivaldate: selectedObject.arrivalDate,
-        //     location: data[0].airlineName,
-        //     total: bookingDetails.amount,
-        //   })
-        // );
-
-        // const penAirResponse = await penAirApiRequest();
-
-        if (
-          bookingResponse.result != null ||
-          bookingResponse.result != undefined
-        ) {
-          ArrivalDate = await getLastDepartureDate(
-            bookingResponse.result.airSolutions[0].journey[0].airSegments
-          );
-
-          departDate =
-            bookingResponse.result.airSolutions[0].journey[0].airSegments[0].departDatetime.split(
-              " "
-            )[0];
-          departTime =
-            bookingResponse.result.airSolutions[0].journey[0].airSegments[0].departDatetime.split(
-              " "
-            )[1];
-
-          ticketDate = new Date().toISOString().split("T")[0];
-        }
-
-        const dateStr = departDate;
-        const [day, month, year] = dateStr.split("/");
-        const formattedDate = `${year}-${month}-${day}`;
-
-        const penAir = await penAirApiRequest({
-          TravelDate: "",
-          FirstName: req.body.Pax[0].FirstName,
-          LastName: req.body.Pax[0].LastName,
-          Title: req.body.Pax[0].Title,
-          Type: "",
-          EMail: requestData.Email,
-          TelePhone: requestData.ContactNo,
-          PassengerName: req.body.Pax[0].FirstName,
-
-          TicketNumber: req.body.TicketNumber,
-          AirlineId: req.body.AirlineId,
-          VLocator: "",
-          TicketDate: ticketDate,
-          IATANumber: req.body.IATANumber,
-          Currency: "GBP",
-          FareSellAmt:
-            parseFloat(response.amount) - parseFloat(response.markup_amount),
-          FareCommAmt: response.markup_amount,
-          TotalSellAmt: response.amount,
-          ValidatingAirlineId: "",
-          TicketType: "",
-          Issuer: "Brightsun",
-          TaxType: "",
-          TaxDescription: "",
-          TaxSellAmt: "",
-          VirtualCardNo: "",
-          FlightNumber:
-            bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
-              .flightNumber,
-          ClassType:
-            bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
-              .class,
-          Status:
-            bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
-              .status,
-          DepartureDate: formattedDate,
-          ArrivalDate: ArrivalDate.date,
-          DepartureCityId:
-            bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
-              .origin,
-          ArrivalCityId: "",
-          DepartureTime: departTime + ":00",
-          ArrivalTime: ArrivalDate.time + ":00",
-          FareBasis: "",
-          DepartureTerminal:
-            bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
-              .airport[0].originTerminal,
-          ArrivalTerminal: "",
-          FlightTime: "",
-          Stops: bookingResponse.result.airSolutions[0].journey[0].stop,
-          PCC: "4CHC",
-          BookingId: bookingDetails.booking_id,
-          Provider: "Brightsun",
-          PNR: bookingResponse.result.pnrInfo[0].brightsunReference,
-        });
-
-        const orderNumber = await penAirBookingId(penAir);
-        await FlightBookingService.updatePenAirOderId(
-          bookingDetails._id,
-          orderNumber
-        );
-
-        const dateObj1 = new Date(requestData.departureDate);
-        const dateObj2 = new Date(requestData.returnDate);
-
-        // Format the date to YYYY-MM-DD
-        const formattedDate1 = dateObj1.toISOString().split("T")[0];
-        const formattedDate2 = dateObj2.toISOString().split("T")[0];
-
-        await sendBookingMail(
-          process.env.BOOKING_REQUEST_EMAIL,
-          "Booking request",
-          holidayairBookingDetails({
-            titel: "Flight",
-            booking_id: bookingDetails.booking_id,
-            penair_id: orderNumber,
-            passenger_name:
-              req.body.Pax[0].FirstName + " " + req.body.Pax[0].LastName,
-            contact_number: requestData.ContactNo,
-            email: requestData.Email,
-            from: req.body.from,
-            to: req.body.to,
-            departuredate: formattedDate1,
-            arrivaldate: formattedDate2,
-          })
-        );
-
-        // res.status(200).json({ data: penAirResponse });
-        const finalResponse = {
-          status: "OK",
-          flightBookingResponse: bookingResponse,
-          bookingResponse: response,
-          data: "",
-        };
-        res.status(200).json({ data: finalResponse });
-      } else {
-        // await sendMail(
-        //   response.email,
-        //   "Booking Failed",
-        //   holidayairBookingFailed({
-        //     titel: "Flight",
-        //     booking_id: bookingDetails.booking_id,
-        //   })
-        // );
-        res.status(500).json({ error: bookingResponse });
+        ticketDate = new Date().toISOString().split("T")[0];
       }
-    } catch (error) {
-      await sendErrorNotificationEmail(
-        "",
-        error,
-        "",
-        "Brightsun Flight booking API Error"
+
+      const dateStr = departDate;
+      const [day, month, year] = dateStr.split("/");
+      const formattedDate = `${year}-${month}-${day}`;
+
+      const penAir = await penAirApiRequest({
+        TravelDate: "",
+        FirstName: req.body.formData.Pax[0].FirstName,
+        LastName: req.body.formData.Pax[0].LastName,
+        Title: req.body.formData.Pax[0].Title,
+        Type: "",
+        EMail: requestData.Email,
+        TelePhone: requestData.ContactNo,
+        PassengerName: req.body.formData.Pax[0].FirstName,
+
+        TicketNumber: req.body.formData.TicketNumber,
+        AirlineId: req.body.formData.AirlineId,
+        VLocator: "",
+        TicketDate: ticketDate,
+        IATANumber: req.body.formData.IATANumber,
+        Currency: "GBP",
+        FareSellAmt:
+          parseFloat(response.amount) - parseFloat(response.markup_amount),
+        FareCommAmt: response.markup_amount,
+        TotalSellAmt: response.amount,
+        ValidatingAirlineId: "",
+        TicketType: "",
+        Issuer: "Brightsun",
+        TaxType: "",
+        TaxDescription: "",
+        TaxSellAmt: "",
+        VirtualCardNo: "",
+        FlightNumber:
+          bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
+            .flightNumber,
+        ClassType:
+          bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
+            .class,
+        Status:
+          bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
+            .status,
+        DepartureDate: formattedDate,
+        ArrivalDate: ArrivalDate.date,
+        DepartureCityId:
+          bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
+            .origin,
+        ArrivalCityId: "",
+        DepartureTime: departTime + ":00",
+        ArrivalTime: ArrivalDate.time + ":00",
+        FareBasis: "",
+        DepartureTerminal:
+          bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
+            .airport[0].originTerminal,
+        ArrivalTerminal: "",
+        FlightTime: "",
+        Stops: bookingResponse.result.airSolutions[0].journey[0].stop,
+        PCC: "4CHC",
+        BookingId: bookingDetails.booking_id,
+        Provider: "Brightsun",
+        PNR: bookingResponse.result.pnrInfo[0].brightsunReference,
+      });
+
+      const orderNumber = await penAirBookingId(
+        penAir,
+        req.body.browserData,
+        ip
       );
-      res.status(500).json({ error: error });
+      await FlightBookingService.updatePenAirOderId(
+        bookingDetails._id,
+        orderNumber
+      );
+
+      const dateObj1 = new Date(requestData.departureDate);
+      const dateObj2 = new Date(requestData.returnDate);
+
+      // Format the date to YYYY-MM-DD
+      const formattedDate1 = dateObj1.toISOString().split("T")[0];
+      const formattedDate2 = dateObj2.toISOString().split("T")[0];
+
+      await sendBookingMail(
+        process.env.BOOKING_REQUEST_EMAIL,
+        "Booking request",
+        holidayairBookingDetails({
+          titel: "Flight",
+          booking_id: bookingDetails.booking_id,
+          penair_id: orderNumber,
+          passenger_name:
+            req.body.formData.Pax[0].FirstName +
+            " " +
+            req.body.formData.Pax[0].LastName,
+          contact_number: requestData.ContactNo,
+          email: requestData.Email,
+          from: req.body.formData.from,
+          to: req.body.formData.to,
+          departuredate: formattedDate1,
+          arrivaldate: formattedDate2,
+        })
+      );
+
+      // res.status(200).json({ data: penAirResponse });
+      const finalResponse = {
+        status: "OK",
+        flightBookingResponse: bookingResponse,
+        bookingResponse: response,
+        data: "",
+      };
+      res.status(200).json({ data: finalResponse });
+    } else {
+      await ApiRequestLogService.create({
+        request: req.body.formData,
+        response: JSON.stringify(response),
+        browserData: req.body.browserData,
+        ip: ip,
+        success_status: false,
+        endpoint: "flight booking",
+      });
+      // await sendMail(
+      //   response.email,
+      //   "Booking Failed",
+      //   holidayairBookingFailed({
+      //     titel: "Flight",
+      //     booking_id: bookingDetails.booking_id,
+      //   })
+      // );
+      res.status(500).json({ error: bookingResponse });
     }
+    // } catch (error) {
+    //   await sendErrorNotificationEmail(
+    //     "",
+    //     error,
+    //     "",
+    //     "Brightsun Flight booking API Error"
+    //   );
+    //   res.status(500).json({ error: error });
+    // }
   }
 
   async getSelectedFlightPriceSearch(req, res) {
-    try {
-      const response = await makeAPIRequest("post", "/flightprice", req.body);
-      // console.log(response.result);
-      // const totalPrice1 = response.result.airSolutions[0].totalPrice;
-      // const totalPrice2 = response.result.airSolutions[1]
-      // ? response.result.airSolutions[1].totalPrice
-      // : 0;
+    const ip = await getClientIp(req);
+    // try {
+    const response = await makeAPIRequest(
+      "post",
+      "/flightprice",
+      req.body.formData
+    );
+    if (response.result && response.result.status === "OK") {
+      const totalPrice1 = response.result.airSolutions[0].totalPrice;
+      const totalPrice2 = response.result.airSolutions[1]
+        ? response.result.airSolutions[1].totalPrice
+        : 0;
 
       const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
 
@@ -315,23 +347,50 @@ class FlightBookingController {
           flightMarkupPrice.amount ?? 0;
       }
 
-      res.status(200).json({ data: response });
-    } catch (error) {
-      await sendErrorNotificationEmail(
-        "",
+      await ApiRequestLogService.create({
+        request: req.body.formData,
+        response: response.result,
+        browserData: req.body.browserData,
+        ip: ip,
+        success_status: true,
+        endpoint: "flight price",
+      });
 
-        error,
-        "",
-        "Brightsun Flight price API Error"
-      );
-      res.status(500).json({ error: error });
+      res.status(200).json({ data: response });
+    } else {
+      await ApiRequestLogService.create({
+        request: req.body.formData,
+        response: JSON.stringify(response),
+        browserData: req.body.browserData,
+        ip: ip,
+        success_status: false,
+        endpoint: "flight price",
+      });
     }
+    // } catch (error) {
+    //   await ApiRequestLogService.create({
+    //     request: req.body.formData,
+    //     response: error,
+    //     browserData: req.body.browserData,
+    //     ip: ip,
+    //     success_status: false,
+    //     endpoint: "flight price",
+    //   });
+    //   await sendErrorNotificationEmail(
+    //     "",
+
+    //     error,
+    //     "",
+    //     "Brightsun Flight price API Error"
+    //   );
+    //   res.status(500).json({ error: error });
+    // }
   }
 
   async updateBookingStatus(req, res) {
     try {
       // Check another string
-      if (req.params.bookingId.startsWith("F")) {
+      if (req.formData.bookingId.startsWith("F")) {
         const bookingDetails = await FlightBookingService.updateBookingStatus(
           req.params.bookingId,
           req.body

@@ -20,9 +20,9 @@ async function sendErrorNotificationEmail(subject, message, error, errorType) {
   try {
     await sendMail(
       [
-        "nayana@prologics.lk",
-        "sujith@holidayair.com",
-        "harsha@prologics.lk",
+        // "nayana@prologics.lk",
+        // "sujith@holidayair.com",
+        // "harsha@prologics.lk",
         "nayanadarshana1@gmail.com",
       ],
       "",
@@ -40,5 +40,19 @@ async function sendErrorNotificationEmail(subject, message, error, errorType) {
   }
 }
 
+async function getClientIp(req) {
+  try {
+    return (
+      req.headers["x-forwarded-for"]?.split(",")[0] || // Handle proxy IPs
+      req.socket.remoteAddress || // Handle direct connections
+      null
+    );
+  } catch (error) {
+    console.log(error);
+    return "";
+  }
+}
+
 module.exports = getLastDepartureDate;
 module.exports = sendErrorNotificationEmail;
+module.exports = getClientIp;
