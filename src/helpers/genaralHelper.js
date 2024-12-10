@@ -42,11 +42,9 @@ async function sendErrorNotificationEmail(subject, message, error, errorType) {
 
 async function getClientIp(req) {
   try {
-    return (
-      req.headers["x-forwarded-for"]?.split(",")[0] || // Handle proxy IPs
-      req.socket.remoteAddress || // Handle direct connections
-      null
-    );
+    const response = await fetch("https://api.ipify.org?format=json");
+    const data = await response.json();
+    return data.ip;
   } catch (error) {
     console.log(error);
     return "";
