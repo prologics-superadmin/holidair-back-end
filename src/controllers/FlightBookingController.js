@@ -348,7 +348,7 @@ class FlightBookingController {
       }
 
       await ApiRequestLogService.create({
-        request: req.body.formData,
+        request: req.body.params,
         response: response.result,
         browserData: req.body.browserData,
         ip: ip,
