@@ -92,8 +92,6 @@ class ApiRequestLogService {
               os: log.os,
               browser: log.browser,
               api_endpoint: log.api_endpoint,
-              request_payload: log.request_payload,
-              response_payload: log.response_payload,
               success_status: log.success_status ? "Success" : "Failed", // Convert to "Success" or "Failed"
               date: date, // Add separate date field
               time: time, // Add separate time field
