@@ -314,7 +314,7 @@ class FlightBookingController {
     const response = await makeAPIRequest(
       "post",
       "/flightprice",
-      req.body.formData
+      req.body.params
     );
     if (response.result && response.result.status === "OK") {
       const totalPrice1 = response.result.airSolutions[0].totalPrice;
