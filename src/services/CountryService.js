@@ -4,6 +4,9 @@ const City = require("../models/City");
 const Airport = require("../models/Airport");
 const Airline = require("../models/Airline");
 const Location = require("../models/Location");
+const InternationalAirport = require("../models/InternationlAirport");
+const HotelDestination = require("../models/HotelDestination");
+const ActivityDestination = require("../models/ActivityDestination");
 
 class CountryService {
   async getList(data) {
@@ -66,7 +69,14 @@ class CountryService {
       const result = await Airport.find(query).limit(100);
       return result.map((airPort) => ({
         _id: airPort._id,
-        name: airPort.name,
+        name:
+          airPort.name +
+          "-" +
+          airPort.code +
+          "-" +
+          airPort.city +
+          "-" +
+          airPort.country,
       }));
     } catch (error) {
       throw error;
@@ -190,6 +200,77 @@ class CountryService {
       return result.map((location) => ({
         code: location.location,
         name: `${location.name} (${location.location} - ${location.country_name})`,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getInternationalAirport(data) {
+    try {
+      const search = data.text;
+      const filters = data.filters || {};
+      const query = { ...filters };
+
+      if (search) {
+        query["$or"] = [
+          { code: { $regex: search, $options: "i" } },
+          { name: { $regex: search, $options: "i" } },
+          { city: { $regex: search, $options: "i" } },
+          { country: { $regex: search, $options: "i" } },
+          { iata: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const result = await InternationalAirport.find(query);
+      return result.map((airport) => ({
+        code: airport.iata,
+        name: `${airport.name} (${airport.city} - ${airport.iata}) - ${airport.country}`,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getHotelLocations(data) {
+    try {
+      const search = data.text;
+      const filters = data.filters || {};
+      const query = { ...filters };
+
+      if (search) {
+        query["$or"] = [
+          { code: { $regex: search, $options: "i" } },
+          { name: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const result = await HotelDestination.find(query);
+      return result.map((destination) => ({
+        code: destination.code,
+        name: `${destination.name} (${destination.code}) ${destination.country}`,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAttractionLocations(data) {
+    try {
+      const search = data.text;
+      const filters = data.filters || {};
+      const query = { ...filters };
+
+      if (search) {
+        query["$or"] = [
+          { code: { $regex: search, $options: "i" } },
+          { name: { $regex: search, $options: "i" } },
+        ];
+      }
+      const result = await ActivityDestination.find(query);
+      return result.map((destination) => ({
+        code: destination.code,
+        name: `${destination.name} (${destination.code}) ${destination.country}`,
       }));
     } catch (error) {
       throw error;

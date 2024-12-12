@@ -132,6 +132,33 @@ class CountryController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  async getInternationalAirportList(req, res) {
+    try {
+      const response = await CountryService.getInternationalAirport(req.params);
+      res.status(200).json({ message: "", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async getHotelDestinations(req, res) {
+    try {
+      const response = await CountryService.getHotelLocations(req.params);
+      res.status(200).json({ message: "", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async getAttractionDestinations(req, res) {
+    try {
+      const response = await CountryService.getAttractionLocations(req.params);
+      res.status(200).json({ message: "", data: response });
+    } catch (_) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
 
 module.exports = new CountryController();

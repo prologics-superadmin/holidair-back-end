@@ -12,5 +12,14 @@ router.get("/airports/:text", CountryController.getAirports);
 router.get("/airlines/:text", CountryController.getAirLines);
 router.get("/country/:text", CountryController.getCountry);
 router.get("/location/:text", CountryController.getLocation);
+router.get(
+  "/airport-location/:text",
+  CountryController.getInternationalAirportList
+);
+router.get("/hotel-location/:text", CountryController.getHotelDestinations);
+router.get(
+  "/attraction-location/:text",
+  CountryController.getAttractionDestinations
+);
 
 module.exports = router;
