@@ -18,84 +18,54 @@ const getClientIp = require("../helpers/genaralHelper");
 
 class FlightSearchController {
   async searchFlights(req, res) {
-    const ip = await getClientIp(req);
-    // try {
-    const response = await makeAPIRequest(
-      "post",
-      "/flightsearch",
-      req.body.params
-    );
-
-    if (response.result && response.result.status === "OK") {
-      await ApiRequestLogService.create({
-        request: req.body.params,
-        response: response.result,
-        browserData: req.body.browserData,
-        ip: ip,
-        success_status: true,
-        endpoint: "flight search",
-      });
-
-      const { highest, lowest } = await getHighestAndLowestPrices(
-        response.result.airSolutions
+    try {
+      const response = await makeAPIRequest(
+        "post",
+        "/flightsearch",
+        req.body.params
       );
-      const stops = await getStopValues(response.result.airSolutions);
-      const flightDurations = await getUniqueTotalFlightDurations(
-        response.result.airSolutions
-      );
-      const baggageAllowances = await getUniqueBaggageAllowances(
-        response.result.airSolutions
-      );
-      const airports = await getUniqueAirports(response.result.airSolutions);
 
-      const airportCodes = await getAirportCodes(response.result.airSolutions);
+      if (response.result && response.result.status === "OK") {
+        const { highest, lowest } = await getHighestAndLowestPrices(
+          response.result.airSolutions
+        );
+        const stops = await getStopValues(response.result.airSolutions);
+        const flightDurations = await getUniqueTotalFlightDurations(
+          response.result.airSolutions
+        );
+        const baggageAllowances = await getUniqueBaggageAllowances(
+          response.result.airSolutions
+        );
+        const airports = await getUniqueAirports(response.result.airSolutions);
 
-      const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
+        const airportCodes = await getAirportCodes(
+          response.result.airSolutions
+        );
 
-      const responseData = {
-        flightResults: response.result.airSolutions,
-        // flightMarkupPrice: flightMarkupPrice.amount ?? 0,
-        flightMarkupPrice: 0,
-        token: response.result.token,
-        searchCriteria: {
-          minPrice: lowest,
-          maxPrice: highest,
-          stops: stops,
-          flightDurations: flightDurations,
-          baggageAllowances: baggageAllowances,
-          airports: airports,
-          airportCodes: airportCodes,
-        },
-      };
-      res.status(200).json({ data: responseData });
-    } else {
-      await ApiRequestLogService.create({
-        request: req.body.params,
-        response: JSON.stringify(response),
-        browserData: req.body.browserData,
-        ip: ip,
-        success_status: false,
-        endpoint: "flight search",
-      });
-      // await sendErrorNotificationEmail(
-      //   "",
-      //   "admin@holidayair.com",
-      //   "error",
-      //   "",
-      //   "Brightsun Flight search API Error"
-      // );
-      res.status(500).json({ error: "API ERROR" });
+        const flightMarkupPrice = await MarkupService.getMarkupByType("Flight");
+
+        const responseData = {
+          flightResults: response.result.airSolutions,
+          // flightMarkupPrice: flightMarkupPrice.amount ?? 0,
+          flightMarkupPrice: 0,
+          token: response.result.token,
+          searchCriteria: {
+            minPrice: lowest,
+            maxPrice: highest,
+            stops: stops,
+            flightDurations: flightDurations,
+            baggageAllowances: baggageAllowances,
+            airports: airports,
+            airportCodes: airportCodes,
+          },
+        };
+        res.status(200).json({ data: responseData });
+      } else {
+        res.status(500).json({ error: "API ERROR" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error });
     }
-    // } catch (error) {
-    //   await sendErrorNotificationEmail(
-    //     "",
-
-    //     error,
-    //     "",
-    //     "Brightsun Flight search API Error"
-    //   );
-    //   res.status(500).json({ error: error });
-    // }
   }
 
   async airportSearch(req, res) {
