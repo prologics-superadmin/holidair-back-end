@@ -105,55 +105,74 @@ class DestinationRetriveController {
         .update(toHash)
         .digest("hex");
 
-      // Define the headers to match the screenshot
+      // Define the headers
       const headers = {
         "Api-key": "52f28425029bfd3ede73457d799c7257",
         "X-Signature": xSignature,
-        Accept: "*/*", // Match the exact Accept header
-        "Accept-Encoding": "gzip, deflate, br", // Match Accept-Encoding
-        "User-Agent": "axios/1.7.7", // Use the User-Agent shown
-        Connection: "keep-alive", // Match the Connection header
-        Host: "api.test.hotelbeds.com", // Specify the Host header
-        "Cache-Control": "no-cache", // Match Cache-Control
+        Accept: "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "User-Agent": "axios/1.7.7",
+        Connection: "keep-alive",
+        Host: "api.test.hotelbeds.com",
+        "Cache-Control": "no-cache",
       };
 
-      const countries = await Country.find();
-      //   console.log(countries);
+      // Fetch all country codes
+      const countries = await Country.find({}, { code: 1, name: 1 });
+      const countryCodes = countries.map((country) => country.code);
 
+      // Fetch country codes already in ActivityDestination
+      const existingCountryCodes = await ActivityDestination.distinct(
+        "country_code"
+      );
+
+      // Filter country codes not in ActivityDestination
+      const newCountryCodes = countryCodes.filter(
+        (code) => !existingCountryCodes.includes(code)
+      );
+
+      // Loop through the filtered country codes
       for (const country of countries) {
+        if (!newCountryCodes.includes(country.code)) continue;
+
         const url = `${baseURL}/en/${country.code}`;
 
-        // Fetch data from the API
-        const response = await axios.get(url, { headers });
+        try {
+          // Fetch data from the API
+          const response = await axios.get(url, { headers });
 
-        // Return the data from the response
-        if (response.data) {
-          if (response.data.country) {
-            ActivityDestination.deleteMany();
-            for (const destination of response.data.country.destinations) {
-              ActivityDestination.create({
+          if (
+            response.data &&
+            response.data.country &&
+            response.data.country.destinations
+          ) {
+            const destinations = response.data.country.destinations.map(
+              (destination) => ({
                 name: destination.name,
                 code: destination.code,
                 country_code: country.code,
                 country: country.name,
-              });
-              console.log("updated", destination.name, country.name);
-            }
-          } else {
-            console.log("no data for", country.name);
-          }
+              })
+            );
 
-          //   return;
-        } else {
-          console.error("No data received from API.");
-          return null;
+            // Insert destinations into the database
+            await ActivityDestination.insertMany(destinations);
+            console.log(`Destinations for ${country.name} added successfully.`);
+          } else {
+            console.log(`No data found for ${country.name}.`);
+          }
+        } catch (apiError) {
+          console.error(
+            `Error fetching data for ${country.name}:`,
+            apiError.message
+          );
         }
       }
-      res.status(200).json({ message: "Destinations Added Successfully" });
-      // Construct the URL
+
+      res.status(200).json({ message: "Destinations added successfully." });
     } catch (error) {
-      console.error("Error fetching destinations:", error.message);
-      throw error;
+      console.error("Error processing destinations:", error.message);
+      res.status(500).json({ message: "Internal Server Error." });
     }
   }
 
