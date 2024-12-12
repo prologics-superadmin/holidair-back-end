@@ -114,7 +114,7 @@ class FlightBookingController {
 
       await ApiRequestLogService.create({
         request: req.body.formData,
-        response: response,
+        response: bookingResponse,
         browserData: req.body.browserData,
         ip: ip,
         success_status: true,
@@ -281,7 +281,7 @@ class FlightBookingController {
     } else {
       await ApiRequestLogService.create({
         request: req.body.formData,
-        response: JSON.stringify(response),
+        response: JSON.stringify(bookingResponse),
         browserData: req.body.browserData,
         ip: ip,
         success_status: false,
