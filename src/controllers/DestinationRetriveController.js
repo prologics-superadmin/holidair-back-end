@@ -14,17 +14,17 @@ class DestinationRetriveController {
     try {
       const countries = await Country.find();
 
-      const baseURL = "https://api.test.hotelbeds.com/hotel-content-api";
+      const baseURL = `${process.env.HOTEL_URL}/hotel-content-api`;
       const endpoint = "1.0/locations/destinations";
       const timestamp = Math.floor(Date.now() / 1000);
-      const toHash = `33f1953dbdd40e5435b9a6c25fa106f7c094a400c4${timestamp}`;
+      const toHash = `${process.env.HOTELBEDS_API_KEY}${process.env.HOTELBEDS_API_SECRET}${timestamp}`;
       const xSignature = crypto
         .createHash("sha256")
         .update(toHash)
         .digest("hex");
 
       const headers = {
-        "Api-key": "33f1953dbdd40e5435b9a6c25fa106f7",
+        "Api-key": `${process.env.HOTELBEDS_API_KEY}`,
         "X-Signature": xSignature,
         Accept: "application/json",
         "Accept-Encoding": "gzip, deflate, br",
@@ -94,12 +94,11 @@ class DestinationRetriveController {
 
   async activityDestination(req, res) {
     try {
-      const baseURL =
-        "https://api.test.hotelbeds.com/activity-content-api/3.0/destinations";
+      const baseURL = `${process.env.AIRPORT_LIST_API}`;
 
       // Generate the timestamp and signature
       const timestamp = Math.floor(Date.now() / 1000);
-      const toHash = `52f28425029bfd3ede73457d799c7257b7953ce67b${timestamp}`;
+      const toHash = `${process.env.ATTRACTION_API_KEY}${process.env.ATTRACTION__API_SECRET}${timestamp}`;
       const xSignature = crypto
         .createHash("sha256")
         .update(toHash)
@@ -107,7 +106,7 @@ class DestinationRetriveController {
 
       // Define the headers
       const headers = {
-        "Api-key": "52f28425029bfd3ede73457d799c7257",
+        "Api-key": `${process.env.ATTRACTION_API_KEY}`,
         "X-Signature": xSignature,
         Accept: "*/*",
         "Accept-Encoding": "gzip, deflate, br",
