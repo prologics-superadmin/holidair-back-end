@@ -99,7 +99,7 @@ class DestinationRetriveController {
 
       // Generate the timestamp and signature
       const timestamp = Math.floor(Date.now() / 1000);
-      const toHash = `9d093d0fc707d9267d68e097c79f1b2b2a554a6032${timestamp}`;
+      const toHash = `52f28425029bfd3ede73457d799c7257b7953ce67b${timestamp}`;
       const xSignature = crypto
         .createHash("sha256")
         .update(toHash)
@@ -107,7 +107,7 @@ class DestinationRetriveController {
 
       // Define the headers to match the screenshot
       const headers = {
-        "Api-key": "9d093d0fc707d9267d68e097c79f1b2b",
+        "Api-key": "52f28425029bfd3ede73457d799c7257",
         "X-Signature": xSignature,
         Accept: "*/*", // Match the exact Accept header
         "Accept-Encoding": "gzip, deflate, br", // Match Accept-Encoding
@@ -129,7 +129,7 @@ class DestinationRetriveController {
         // Return the data from the response
         if (response.data) {
           if (response.data.country) {
-            ActivityDestination.deleteMany()
+            ActivityDestination.deleteMany();
             for (const destination of response.data.country.destinations) {
               ActivityDestination.create({
                 name: destination.name,
