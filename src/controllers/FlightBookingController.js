@@ -87,7 +87,7 @@ class FlightBookingController {
     const bookingResponse = await makeAPIRequest(
       "POST",
       "/flightpnr",
-      req.body.params
+      req.body.formData
     );
 
     const response = await FlightBookingService.getById(bookingDetails._id);
@@ -359,7 +359,7 @@ class FlightBookingController {
       res.status(200).json({ data: response });
     } else {
       await ApiRequestLogService.create({
-        request: req.body.formData,
+        request: req.body.params,
         response: JSON.stringify(response),
         browserData: req.body.browserData,
         ip: ip,

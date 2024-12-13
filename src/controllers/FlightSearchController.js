@@ -18,6 +18,7 @@ const getClientIp = require("../helpers/genaralHelper");
 
 class FlightSearchController {
   async searchFlights(req, res) {
+    const ip = await getClientIp(req);
     try {
       const response = await makeAPIRequest(
         "post",
@@ -26,6 +27,15 @@ class FlightSearchController {
       );
 
       if (response.result && response.result.status === "OK") {
+        await ApiRequestLogService.create({
+          request: req.body.params,
+          response: JSON.stringify(response),
+          browserData: req.body.browserData,
+          ip: ip,
+          success_status: true,
+          endpoint: "flight search",
+        });
+
         const { highest, lowest } = await getHighestAndLowestPrices(
           response.result.airSolutions
         );
@@ -61,9 +71,25 @@ class FlightSearchController {
         };
         res.status(200).json({ data: responseData });
       } else {
+        await ApiRequestLogService.create({
+          request: req.body.params,
+          response: JSON.stringify(response),
+          browserData: req.body.browserData,
+          ip: ip,
+          success_status: false,
+          endpoint: "flight search",
+        });
         res.status(500).json({ error: "API ERROR" });
       }
     } catch (error) {
+      await ApiRequestLogService.create({
+        request: req.body.params,
+        response: JSON.stringify(error),
+        browserData: req.body.browserData,
+        ip: ip,
+        success_status: false,
+        endpoint: "flight search",
+      });
       res.status(500).json({ error: error });
     }
   }
