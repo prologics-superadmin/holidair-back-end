@@ -1,4 +1,5 @@
 const xml2js = require("xml2js");
+const ApiRequestLogService = require("../services/ApiRequestLogService");
 
 async function penAirBookingId(xmlString, browserData, ip) {
   try {
