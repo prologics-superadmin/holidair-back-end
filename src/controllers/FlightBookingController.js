@@ -7,7 +7,6 @@ const makeAPIRequest = require("../utils/flightRequest");
 const makeHotelApiRequest = require("../utils/hotelRequest");
 const jwt = require("jsonwebtoken");
 
-const getLastDepartureDate = require("../helpers/genaralHelper");
 const { User } = require("../models/UserManagement/User");
 const penAirApiRequest = require("../utils/penAirRequest");
 const MarkupService = require("../services/MarkupService");
@@ -20,6 +19,8 @@ const sendErrorNotificationEmail = require("../helpers/genaralHelper");
 const sendBookingMail = require("../mail/bookingMail");
 const getClientIp = require("../helpers/genaralHelper");
 const ApiRequestLogService = require("../services/ApiRequestLogService");
+const getLastArrivalTime = require("../helpers/getLastArrivalTime");
+const getLastDepartureDate = require("../helpers/getLastDepartureDate");
 
 class FlightBookingController {
   constructor() {
@@ -95,6 +96,7 @@ class FlightBookingController {
     const requestData = req.body.formData;
 
     let ArrivalDate = "";
+    let ArrivalTime = "";
 
     let departDate = "";
 
@@ -156,9 +158,8 @@ class FlightBookingController {
         bookingResponse.result != null ||
         bookingResponse.result != undefined
       ) {
-        ArrivalDate = await getLastDepartureDate(
-          bookingResponse.result.airSolutions[0].journey[0].airSegments
-        );
+        ArrivalDate = await getLastDepartureDate(bookingResponse.result);
+        // ArrivalTime = await getLastArrivalTime(bookingResponse.result);
 
         departDate =
           bookingResponse.result.airSolutions[0].journey[0].airSegments[0].departDatetime.split(
@@ -171,6 +172,9 @@ class FlightBookingController {
 
         ticketDate = new Date().toISOString().split("T")[0];
       }
+
+      // console.log(ArrivalDate);
+      // console.log("br", bookingResponse.result);
 
       const dateStr = departDate;
       const [day, month, year] = dateStr.split("/");
@@ -218,8 +222,8 @@ class FlightBookingController {
           bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
             .origin,
         ArrivalCityId: "",
-        DepartureTime: departTime + ":00",
-        ArrivalTime: ArrivalDate.time + ":00",
+        DepartureTime: "12:00:00",
+        ArrivalTime: "02:00:00",
         FareBasis: "",
         DepartureTerminal:
           bookingResponse.result.airSolutions[0].journey[0].airSegments[0]
@@ -233,15 +237,16 @@ class FlightBookingController {
         PNR: bookingResponse.result.pnrInfo[0].brightsunReference,
       });
 
-      const orderNumber = await penAirBookingId(
-        penAir,
-        req.body.browserData,
-        ip
-      );
-      await FlightBookingService.updatePenAirOderId(
-        bookingDetails._id,
-        orderNumber
-      );
+      // console.log("penAAA", penAir);
+      // const orderNumber = await penAirBookingId(
+      //   penAir,
+      //   req.body.browserData,
+      //   ip
+      // );
+      // await FlightBookingService.updatePenAirOderId(
+      //   bookingDetails._id,
+      //   orderNumber
+      // );
 
       const dateObj1 = new Date(requestData.departureDate);
       const dateObj2 = new Date(requestData.returnDate);
@@ -256,7 +261,7 @@ class FlightBookingController {
         holidayairBookingDetails({
           titel: "Flight",
           booking_id: bookingDetails.booking_id,
-          penair_id: orderNumber,
+          penair_id: "",
           passenger_name:
             req.body.formData.Pax[0].FirstName +
             " " +
@@ -642,6 +647,7 @@ class FlightBookingController {
       //   PNR: bookingDetails.booking_id,
       // });
 
+      console.log("pen", penAir);
       const orderNumber = await penAirBookingId(penAir);
       await FlightBookingService.updatePenAirOderId(
         bookingDetails._id,

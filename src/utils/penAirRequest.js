@@ -148,6 +148,8 @@ async function penAirApiRequest(data) {
     </soap:Body>
   </soap:Envelope>`;
 
+    // console.log(xmlData);
+
     const response = await axios({
       method: "POST",
       url: process.env.PEN_AIR_URL,
@@ -160,12 +162,14 @@ async function penAirApiRequest(data) {
       maxContentLength: 2000000, // Limit response size to 2MB (adjust as needed)
     });
 
+    console.log("req", xmlData);
+
     return response.data;
   } catch (error) {
     if (error.response) {
       console.log("Response Data:", error.response.data);
-      console.log("Response Status:", error.response.status);
-      console.log("Response Headers:", error.response.headers);
+      // console.log("Response Status:", error.response.status);
+      // console.log("Response Headers:", error.response.headers);
     } else if (error.request) {
       console.log("No response received", error.request);
     } else {

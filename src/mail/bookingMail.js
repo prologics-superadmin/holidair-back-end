@@ -13,12 +13,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendBookingMail(
-  receiverAddress,
-  from = "alert@holidayair.com",
-  subject,
-  template
-) {
+async function sendBookingMail(receiverAddress, subject, template) {
   try {
     const mailInfo = await transporter.sendMail({
       from: "onlinebooking@holidayair.com",

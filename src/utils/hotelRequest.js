@@ -16,7 +16,7 @@ if (!fs.existsSync(logsFolder)) {
   fs.mkdirSync(logsFolder, { recursive: true });
 }
 
-async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
+async function makeHotelApiRequest(method, endpoint, body = "", reqBody = "") {
   try {
     const timestamp = Math.floor(Date.now() / 1000);
     const toHash = `${process.env.HOTELBEDS_API_KEY}${process.env.HOTELBEDS_API_SECRET}${timestamp}`;
@@ -26,7 +26,7 @@ async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
       "Api-key": process.env.HOTELBEDS_API_KEY,
       "X-Signature": xSignature,
       Accept: "application/json",
-      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Encoding": "gzip",
     };
 
     // Axios request options
@@ -38,6 +38,8 @@ async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
       data: reqBody, // Add query parameters
     };
 
+    // console.log(options);
+
     // Log the request to the request.json file
 
     const response = await axios(options);
@@ -46,9 +48,9 @@ async function makeHotelApiRequest(method, endpoint, body = {}, reqBody = {}) {
 
     return response.data;
   } catch (error) {
+    console.log(error);
     // Log the error to the error.json file
-
-    throw error;
+    // throw error;
   }
 }
 

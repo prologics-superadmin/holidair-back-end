@@ -122,54 +122,53 @@ class HotelSearchController {
   }
 
   async getHotelContent(req, res) {
-    // try {
-    const params = `hotel-content-api/1.0/hotels/${req.params.id}/details`;
-    const response = await makeHotelApiRequest("GET", params);
+    try {
+      const params = `hotel-content-api/1.0/hotels/${req.params.id}/details?language=ENG&useSecondaryLanguage=False`;
+      const response = await makeHotelApiRequest("GET", params);
 
-    console.log(response);
+      const { checkIn, checkOut, from, to, adults, rooms, children } =
+        req.body.params;
+      const stay = {
+        checkIn,
+        checkOut,
+      };
 
-    // const { checkIn, checkOut, from, to, adults, rooms, children } = req.body;
-    // const stay = {
-    //   checkIn,
-    //   checkOut,
-    // };
+      const occupancies = [
+        {
+          rooms: rooms,
+          adults: adults,
+          children: children,
+        },
+      ];
 
-    // const occupancies = [
-    //   {
-    //     rooms: rooms,
-    //     adults: adults,
-    //     children: children,
-    //   },
-    // ];
+      const requestBody = {
+        stay,
+        occupancies,
+        hotels: { hotel: [req.params.id] },
+      };
 
-    // const requestBody = {
-    //   // stay,
-    //   // occupancies,
-    //   hotels: { hotel: [req.params.id] },
-    // };
+      const hotelResponse = await makeHotelApiRequest(
+        "POST",
+        "hotel-api/3.0/hotels",
+        "",
+        requestBody
+      );
+      const finalResponse = {
+        response: response,
+        priceResponse: hotelResponse,
+      };
 
-    // const hotelResponse = await makeHotelApiRequest(
-    //   "POST",
-    //   "hotel-api/3.0/hotels",
-    //   "",
-    //   requestBody
-    // );
-    // const finalResponse = {
-    //   response: response,
-    //   priceResponse: hotelResponse,
-    // };
+      res.status(200).json({ data: finalResponse });
+    } catch (error) {
+      await sendErrorNotificationEmail(
+        "",
 
-    // res.status(200).json({ data: finalResponse });
-    // } catch (error) {
-    //   await sendErrorNotificationEmail(
-    //     "",
-
-    //     error,
-    //     error.response.data,
-    //     "Hotel get API Error"
-    //   );
-    //   res.status(500).json({ error: error });
-    // }
+        error,
+        error.response.data,
+        "Hotel get API Error"
+      );
+      res.status(500).json({ error: error });
+    }
   }
 
   async searchCountries(req, res) {
