@@ -1,21 +1,6 @@
 const errorNotificationMail = require("../mail/error-notification");
 const sendMail = require("../mail/mail");
 
-function getLastDepartureDate(journey) {
-  try {
-    if (journey.length === 0) return "";
-    const lastJourney = journey[journey.length - 1];
-    const date = lastJourney.arrivalDatetime.split(" ");
-    const [day, month, year] = date[0].split("/");
-    return {
-      date: `${year}-${month}-${day}`,
-      time: date[1],
-    };
-  } catch (error) {
-    return "";
-  }
-}
-
 async function sendErrorNotificationEmail(subject, message, error, errorType) {
   try {
     await sendMail(
@@ -51,6 +36,5 @@ async function getClientIp(req) {
   }
 }
 
-module.exports = getLastDepartureDate;
 module.exports = sendErrorNotificationEmail;
 module.exports = getClientIp;
