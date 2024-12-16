@@ -57,7 +57,7 @@ async function penAirApiRequest(data) {
           <![CDATA[<FolderCreate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
             <Login>
               <Username>HolidayAir</Username>
-              <Password>3B68386438759368</Password>
+              <Password>406A3E6E3F723B6A</Password>
             </Login>
             <Version>100</Version>
             <Provider>${Provider}</Provider>
