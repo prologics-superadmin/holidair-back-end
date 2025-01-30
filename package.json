@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "permissions": "node scripts/configPermissions.js",
     "Init": "node scripts/index.js",
-    "dev": "nodemon index.js",
+    "dev": "node init && nodemon index.js",
     "hotelDestinations": "node scripts/hotelDestination.js"
   },
   "author": "",

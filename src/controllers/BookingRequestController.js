@@ -1,3 +1,4 @@
+const callMeRequest = require("../mail/call-me-request");
 const holidayairBookingDetails = require("../mail/holidayair-booking-details");
 const holidayairContactusRequest = require("../mail/holidayair-contactus-request");
 const sendMail = require("../mail/mail");
@@ -36,7 +37,8 @@ class BookingRequestController {
   async contactUs(req, res) {
     try {
       await sendMail(
-        "nayanadarshana1@gmail.com",
+        "webbookings@holidayair.com",
+        "",
         "Contact us request",
         holidayairContactusRequest({
           titel: "Contact",
@@ -60,7 +62,29 @@ class BookingRequestController {
 
   async callMeRequest(req, res) {
     try {
+      if (req.body.enquiryType == "") {
+        req.body.enquiryType = "general";
+      }
+
       const response = await BookingRequestService.contactMeCreate(req.body);
+      await sendMail(
+        "webbookings@holidayair.com",
+        "",
+        "Call me request",
+        callMeRequest({
+          titel: "Call Me",
+          booking_id: "N/A",
+          penair_id: "N/A",
+          passenger_name: req.body.name,
+          contact_number: req.body.phone,
+          email: req.body.email,
+          callDate: req.body.callDate,
+          callTimeFrom: req.body.callTimeFrom,
+          message: req.body.enquiryDescription,
+          callTimeTo: req.body.callTimeTo,
+          enquiryType: req.body.enquiryType,
+        })
+      );
       res
         .status(201)
         .json({ message: "New Call me request created", data: response });
